@@ -1,15 +1,16 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginAlias": "PentairIntellicenter",
   "pluginType": "platform",
   "singular": true,
   "schema": {
     "type": "object",
     "properties": {
-      "name": {
-        "title": "Name",
+      "ipAddress": {
+        "title": "IP Address",
         "type": "string",
         "required": true,
-        "default": "Example Dynamic Platform"
+        "default": "192.168.1.123",
+        "description": "IP Address of Pentair Intellicenter. Should be static or DHCP-reserved"
       }
     }
   }

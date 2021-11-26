@@ -1,16 +1,15 @@
 {
-  "private": true,
-  "displayName": "Plugin Name",
-  "name": "homebridge-plugin-name",
-  "version": "1.0.0",
-  "description": "A short description about what your plugin does.",
+  "displayName": "Homebridge Pentair IntelliCenter Plugin",
+  "name": "homebridge-pentair-intellicenter",
+  "version": "1.0.0-beta.0",
+  "description": "Homebridge plugin for integrating Pentair IntelliCenter into HomeKit.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/USERNAME/GITHUB_PROJECT_NAME.git"
+    "url": "git://github.com/dustindclark/homebridge-pentair-intellicenter.git"
   },
   "bugs": {
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME/issues"
+    "url": "https://github.com/dustindclark/homebridge-pentair-intellicenter/issues"
   },
   "engines": {
     "node": ">=14.18.1",
@@ -21,14 +20,21 @@
     "lint": "eslint src/**.ts --max-warnings=0",
     "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
-    "prepublishOnly": "npm run lint && npm run build"
+    "prepublishOnly": "npm run lint && npm run build && npm run test",
+    "test": "jest"
   },
   "keywords": [
-    "homebridge-plugin"
+    "homebridge-plugin",
+    "homebridge pentair intellicenter",
+    "homebridge pentair",
+    "homebridge intellicenter",
+    "homekit pentair intelli center",
+    "homekit intelli center"
   ],
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^16.10.9",
+    "@types/jest": "^27.0.3",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "eslint": "^8.0.1",
@@ -36,6 +42,8 @@
     "nodemon": "^2.0.13",
     "rimraf": "^3.0.2",
     "ts-node": "^10.3.0",
-    "typescript": "^4.4.4"
+    "typescript": "^4.4.4",
+    "jest": "^27.3.1",
+    "ts-jest": "^27.0.7"
   }
 }
