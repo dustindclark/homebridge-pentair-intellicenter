@@ -94,6 +94,6 @@ export class CircuitAccessory {
    * this.service.updateCharacteristic(this.platform.Characteristic.On, true)
    */
   async getOn(): Promise<CharacteristicValue> {
-    return this.accessory.context.status!.params && this.accessory.context.status.params[STATUS_KEY] === CircuitStatus.On;
+    return this.accessory.context!.status!.params && this.accessory.context.status.params[STATUS_KEY] === CircuitStatus.On;
   }
 }
