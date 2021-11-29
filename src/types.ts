@@ -18,13 +18,13 @@ export enum IntelliCenterQueryName {
 }
 
 type CircuitStatusSubscribeRequest = {
-  objnam: string,
-  keys: ReadonlyArray<string>,
+  objnam: string;
+  keys: ReadonlyArray<string>;
 };
 
 export type CircuitStatusMessage = {
-  objnam: string,
-  params: never,
+  objnam: string;
+  params: never;
 };
 
 type IntelliCenterMessage = {
@@ -72,12 +72,11 @@ export type Body = {
 
 export type Module = {
   id: string;
-  features: ReadonlyArray<Circuit>,
-  bodies: ReadonlyArray<Body>,
+  features: ReadonlyArray<Circuit>;
+  bodies: ReadonlyArray<Body>;
 };
 
 export type Panel = {
   id: string;
   modules: ReadonlyArray<Module>;
-
-}
+};

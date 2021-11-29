@@ -29,7 +29,9 @@ const transformFeatures = (circuits: never[]): ReadonlyArray<Circuit> => {
   if (!circuits) {
     return [];
   }
-  return circuits.filter(featureObj => featureObj[PARAMS_KEY][OBJ_TYPE_KEY] === ObjectType.Circuit && featureObj[PARAMS_KEY]['FEATR'] === 'ON').map(featureObj => {
+  return circuits.filter(featureObj => {
+    return featureObj[PARAMS_KEY][OBJ_TYPE_KEY] === ObjectType.Circuit && featureObj[PARAMS_KEY]['FEATR'] === 'ON';
+  }).map(featureObj => {
     const params = featureObj[PARAMS_KEY];
     return {
       id: featureObj[OBJ_ID_KEY],

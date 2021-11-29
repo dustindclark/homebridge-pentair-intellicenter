@@ -155,7 +155,8 @@ export class PentairPlatform implements DynamicPlatformPlugin {
   }
 
   async handleUpdate(response: IntelliCenterResponse) {
-    this.log.debug(`Handling IntelliCenter ${response.response} response to ${response.command}.${response.queryName} for message ID ${response.messageID}`);
+    this.log.debug(`Handling IntelliCenter ${response.response} response to` +
+      `${response.command}.${response.queryName} for message ID ${response.messageID}`);
     if (response.command === IntelliCenterResponseCommand.NotifyList) {
       if (!response.objectList) {
         this.log.error('Object list missing in NotifyList response.');
