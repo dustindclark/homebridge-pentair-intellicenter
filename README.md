@@ -6,6 +6,9 @@
 </p>
 
 
-# Homebridge Pentair Intellicenter Plugin
+# Homebridge Pentair IntelliCenter Plugin
+[![NPM Version](https://img.shields.io/npm/v/homebridge-pentair-intellicenter.svg)](https://www.npmjs.com/package/homebridge-rinnai-controlr)
 
-TODO
+This plugin integrates with the Pentair IntelliCenter panel to expose its features to HomeKit/Siri. Currently, only the circuits that are marked as "Features" in IntelliCenter will be exposed as switches in HomeKit. I plan to extend these capabilities in the coming weeks, starting with heater control.
+
+Also, along with the [Homebridge Alexa plugin](https://github.com/NorthernMan54/homebridge-alexa), this plugin can be used to expose your IntelliCenter circuits to Alexa. As far as I know, this is currently the only Alexa integration as the Alexa skill for IntelliCenter is not longer available. 
