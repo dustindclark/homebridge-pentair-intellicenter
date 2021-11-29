@@ -31,7 +31,10 @@
     "homekit pentair intelli center",
     "homekit intelli center"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "telnet-client": "^1.4.11",
+    "uuid": "^8.3.2"
+  },
   "devDependencies": {
     "@types/node": "^16.10.9",
     "@types/jest": "^27.0.3",
