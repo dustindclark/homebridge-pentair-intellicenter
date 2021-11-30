@@ -62,13 +62,11 @@ export enum BodyType {
 }
 
 export type Body = {
-  id: string;
-  name: string;
   type: BodyType;
   highTemp: number;
   lowTemp: number;
   heaterId?: string;
-};
+} & Circuit;
 
 export type Module = {
   id: string;

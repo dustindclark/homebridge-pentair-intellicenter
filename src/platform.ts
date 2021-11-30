@@ -204,15 +204,16 @@ export class PentairPlatform implements DynamicPlatformPlugin {
 
     for (const panel of panels) {
       for (const module of panel.modules) {
-        for (const feature of module.features) {
-          this.updateCircuit(panel, module, feature);
+        const circuits = (module.bodies as ReadonlyArray<Circuit>).concat(module.features);
+        for (const circuit of circuits) {
+          this.updateCircuit(panel, module, circuit);
           // Register for status updates.
           const command = {
             command: IntelliCenterRequestCommand.RequestParamList,
             messageID: uuidv4(),
             objectList: [
               {
-                objnam: feature.id,
+                objnam: circuit.id,
                 keys: [STATUS_KEY],
               },
             ],
