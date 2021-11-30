@@ -1,4 +1,4 @@
-import {CharacteristicValue, PlatformAccessory, Service} from 'homebridge';
+import {Characteristic, CharacteristicValue, PlatformAccessory, Service} from 'homebridge';
 
 import {PentairPlatform} from './platform';
 import {
@@ -56,6 +56,10 @@ export class CircuitAccessory {
     this.service = this.accessory.getService(this.platform.Service.Switch) || this.accessory.addService(this.platform.Service.Switch);
     this.service.setCharacteristic(this.platform.Characteristic.Name, this.circuit.name);
 
+    if (this.accessory.context?.status?.params) {
+      this.service.updateCharacteristic(this.platform.Characteristic.On, this.getCircuitStatus());
+    }
+
     this.service.getCharacteristic(this.platform.Characteristic.On)
       .onSet(this.setOn.bind(this))
       .onGet(this.getOn.bind(this));
@@ -94,6 +98,10 @@ export class CircuitAccessory {
    * this.service.updateCharacteristic(this.platform.Characteristic.On, true)
    */
   async getOn(): Promise<CharacteristicValue> {
+    return this.getCircuitStatus();
+  }
+
+  getCircuitStatus(): boolean {
     if (this.accessory.context?.status?.params) {
       return this.accessory.context.status.params[STATUS_KEY] === CircuitStatus.On;
     }
