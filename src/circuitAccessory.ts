@@ -56,6 +56,10 @@ export class CircuitAccessory {
       this.service.getCharacteristic(this.platform.Characteristic.Saturation)
         .onSet(this.setColorSaturation.bind(this))
         .onGet(this.getColorSaturation.bind(this));
+
+      this.service.getCharacteristic(this.platform.Characteristic.ColorTemperature)
+        .onSet(this.setColorTemperature.bind(this))
+        .onGet(this.getColorTemperature.bind(this));
     } else {
       this.service = this.accessory.getService(this.platform.Service.Switch)
         || this.accessory.addService(this.platform.Service.Switch);
@@ -94,20 +98,28 @@ export class CircuitAccessory {
     await this.delay(10);
     const saturation = this.accessory.context.saturation;
     this.platform.log.info(`Setting ${this.circuit.name} hue to ${value}. Saturation is ${saturation}`);
+    const color = getIntelliBriteColor(value as number, saturation);
     const command = {
       command: IntelliCenterRequestCommand.SetParamList,
       messageID: uuidv4(),
       objectList: [{
         objnam: this.circuit.id,
-        params: {[ACT_KEY]: getIntelliBriteColor(value as number, saturation).intellicenterCode} as never,
+        params: {[ACT_KEY]: color.intellicenterCode} as never,
       } as CircuitStatusMessage],
     } as IntelliCenterRequest;
     this.platform.sendCommandNoWait(command);
+    this.service.updateCharacteristic(this.platform.Characteristic.Hue, color.hue);
+    this.service.updateCharacteristic(this.platform.Characteristic.Saturation, color.saturation);
   }
 
   async setColorSaturation(value: CharacteristicValue) {
     this.platform.log.info(`Setting ${this.circuit.name} saturation to ${value}`);
     this.accessory.context.saturation = value as number;
+  }
+
+  async setColorTemperature(value: CharacteristicValue) {
+    this.platform.log.info(`Setting ${this.circuit.name} temperature to ${value}`);
+    this.accessory.context.temperature = value as number;
   }
 
   async getColorHue(): Promise<CharacteristicValue> {
@@ -116,6 +128,10 @@ export class CircuitAccessory {
 
   async getColorSaturation(): Promise<CharacteristicValue> {
     return this.color.saturation;
+  }
+
+  async getColorTemperature(): Promise<CharacteristicValue> {
+    return this.accessory.context.temperature;
   }
 
   /**
