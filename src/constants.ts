@@ -15,3 +15,4 @@ export const LOW_TEMP_KEY = 'LOTMP';
 
 export const THERMOSTAT_STEP_VALUE = 0.5;
 export const NO_HEATER_ID = '00000';
+export const DEFAULT_COLOR_TEMPERATURE = 140;

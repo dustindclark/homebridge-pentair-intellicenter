@@ -12,7 +12,7 @@ import {
 } from './types';
 import {v4 as uuidv4} from 'uuid';
 import {MANUFACTURER} from './settings';
-import {ACT_KEY, STATUS_KEY} from './constants';
+import {ACT_KEY, DEFAULT_COLOR_TEMPERATURE, STATUS_KEY} from './constants';
 import {getIntelliBriteColor} from './util';
 
 const MODEL = 'Circuit';
@@ -60,6 +60,10 @@ export class CircuitAccessory {
       this.service.getCharacteristic(this.platform.Characteristic.ColorTemperature)
         .onSet(this.setColorTemperature.bind(this))
         .onGet(this.getColorTemperature.bind(this));
+
+      this.service.getCharacteristic(this.platform.Characteristic.Brightness)
+        .onSet(this.setBrightness.bind(this))
+        .onGet(this.getBrightness.bind(this));
     } else {
       this.service = this.accessory.getService(this.platform.Service.Switch)
         || this.accessory.addService(this.platform.Service.Switch);
@@ -81,7 +85,7 @@ export class CircuitAccessory {
    * These are sent when the user changes the state of an accessory, for example, turning on a Light bulb.
    */
   async setOn(value: CharacteristicValue) {
-    this.platform.log.info(`Setting ${this.circuit.name} to ${value}`);
+    this.platform.log.debug(`Setting ${this.circuit.name} to ${value}`);
     const command = {
       command: IntelliCenterRequestCommand.SetParamList,
       messageID: uuidv4(),
@@ -97,7 +101,7 @@ export class CircuitAccessory {
     // Wait for saturation first. 10ms chosen arbitrarily.
     await this.delay(10);
     const saturation = this.accessory.context.saturation;
-    this.platform.log.info(`Setting ${this.circuit.name} hue to ${value}. Saturation is ${saturation}`);
+    this.platform.log.debug(`Setting ${this.circuit.name} hue to ${value}. Saturation is ${saturation}`);
     const color = getIntelliBriteColor(value as number, saturation);
     const command = {
       command: IntelliCenterRequestCommand.SetParamList,
@@ -113,13 +117,18 @@ export class CircuitAccessory {
   }
 
   async setColorSaturation(value: CharacteristicValue) {
-    this.platform.log.info(`Setting ${this.circuit.name} saturation to ${value}`);
+    this.platform.log.debug(`Setting ${this.circuit.name} saturation to ${value}`);
     this.accessory.context.saturation = value as number;
   }
 
   async setColorTemperature(value: CharacteristicValue) {
-    this.platform.log.info(`Setting ${this.circuit.name} temperature to ${value}`);
+    this.platform.log.debug(`Setting ${this.circuit.name} temperature to ${value}`);
     this.accessory.context.temperature = value as number;
+  }
+
+  async setBrightness(value: CharacteristicValue) {
+    this.platform.log.warn(`Ignoring brightness value ${value}`);
+    this.service.updateCharacteristic(this.platform.Characteristic.Saturation, 100);
   }
 
   async getColorHue(): Promise<CharacteristicValue> {
@@ -130,8 +139,12 @@ export class CircuitAccessory {
     return this.color.saturation;
   }
 
+  async getBrightness(): Promise<CharacteristicValue> {
+    return 100;
+  }
+
   async getColorTemperature(): Promise<CharacteristicValue> {
-    return this.accessory.context.temperature;
+    return this.accessory.context.temperature || DEFAULT_COLOR_TEMPERATURE;
   }
 
   /**
