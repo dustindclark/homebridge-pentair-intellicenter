@@ -6,3 +6,11 @@ export const OBJ_SUBTYPE_KEY = 'SUBTYP';
 export const OBJ_LIST_KEY = 'OBJLIST';
 export const CIRCUITS_KEY = 'CIRCUITS';
 export const STATUS_KEY = 'STATUS';
+export const LAST_TEMP_KEY = 'LSTTMP';
+export const HEAT_SOURCE_KEY = 'HTSRC';
+export const HEATER_KEY = 'HEATER';
+export const MODE_KEY = 'MODE';
+export const LOW_TEMP_KEY = 'LOTMP';
+
+export const THERMOSTAT_STEP_VALUE = 0.5;
+export const NO_HEATER_ID = '00000';

@@ -4,24 +4,34 @@ import {PLATFORM_NAME, PLUGIN_NAME} from './settings';
 import {CircuitAccessory} from './circuitAccessory';
 import Telnet, {SendOptions} from 'telnet-client';
 import {
-  Circuit,
+  Body,
+  Circuit, CircuitStatusMessage,
+  CircuitTypes,
+  Heater,
   IntelliCenterQueryName,
   IntelliCenterRequest,
   IntelliCenterRequestCommand,
   IntelliCenterResponse,
   IntelliCenterResponseCommand,
   Module,
+  ObjectType,
   Panel,
+  TemperatureUnits,
 } from './types';
 import {v4 as uuidv4} from 'uuid';
-import {transformPanels} from './util';
-import {STATUS_KEY} from './constants';
+import {transformPanels, updateBody} from './util';
+import {HEAT_SOURCE_KEY, HEATER_KEY, LAST_TEMP_KEY, MODE_KEY, STATUS_KEY} from './constants';
+import {HeaterAccessory} from './heaterAccessory';
 
 type PentairConfig = {
   ipAddress: string;
   username: string;
   password: string;
   maxBufferSize: number;
+  temperatureUnits: TemperatureUnits;
+  minimumTemperature: number;
+  maximumTemperature: number;
+
 } & PlatformConfig;
 
 /**
@@ -34,7 +44,8 @@ export class PentairPlatform implements DynamicPlatformPlugin {
   public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
 
   // this is used to track restored cached accessories
-  public readonly accessories: PlatformAccessory[] = [];
+  public readonly accessoryMap: Map<string, PlatformAccessory> = new Map();
+  public readonly heaters: Map<string, PlatformAccessory> = new Map();
 
   private readonly connection: Telnet;
   private readonly maxBufferSize: number;
@@ -151,31 +162,60 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     this.log.debug('Loading accessory from cache:', accessory.displayName);
 
     // add the restored accessory to the accessories cache so we can track if it has already been registered
-    this.accessories.push(accessory);
+    this.accessoryMap.set(accessory.UUID, accessory);
+    if (accessory.context.heater) {
+      this.heaters.set(accessory.UUID, accessory.context.heater);
+    }
   }
 
   async handleUpdate(response: IntelliCenterResponse) {
     this.log.debug(`Handling IntelliCenter ${response.response} response to` +
       `${response.command}.${response.queryName} for message ID ${response.messageID}`);
-    if (response.command === IntelliCenterResponseCommand.NotifyList) {
+    if (response.command === IntelliCenterResponseCommand.NotifyList || response.command === IntelliCenterResponseCommand.WriteParamList) {
       if (!response.objectList) {
         this.log.error('Object list missing in NotifyList response.');
         return;
       }
       response.objectList.forEach((objListResponse) => {
-        const uuid = this.api.hap.uuid.generate(objListResponse.objnam);
+        const changes = (objListResponse.changes || [objListResponse]) as ReadonlyArray<CircuitStatusMessage>;
+        changes.forEach((change) => {
+          if (change.objnam && change.params) {
+            const uuid = this.api.hap.uuid.generate(change.objnam);
+            const existingAccessory = this.accessoryMap.get(uuid);
+            if (existingAccessory) {
+              existingAccessory.context.status = change;
 
-        const existingAccessory = this.accessories.find(accessory => accessory.UUID === uuid);
-        if (existingAccessory) {
-          existingAccessory.context.status = objListResponse;
-          this.api.updatePlatformAccessories([existingAccessory]);
-          new CircuitAccessory(this, existingAccessory);
-        }
+              if (CircuitTypes.has(existingAccessory.context.circuit.objectType)) {
+                this.updateCircuit(existingAccessory, change.params);
+              }
+            }
+          }
+        });
       });
 
     } else {
       this.log.debug(`Unhandled command in handleUpdate: ${this.json(response)}`);
     }
+  }
+
+  updateCircuit(accessory: PlatformAccessory, params: never) {
+    if (accessory.context.circuit.objectType === ObjectType.Body) {
+      const body = accessory.context.circuit as Body;
+      updateBody(body, params);
+      this.updateHeaterStatuses(body);
+    }
+    this.api.updatePlatformAccessories([accessory]);
+    new CircuitAccessory(this, accessory);
+  }
+
+  updateHeaterStatuses(body: Body) {
+    this.heaters.forEach(((heaterAccessory) => {
+      if (heaterAccessory.context.body.id === body.id) {
+        heaterAccessory.context.body = body;
+        this.api.updatePlatformAccessories([heaterAccessory]);
+        new HeaterAccessory(this, heaterAccessory);
+      }
+    }));
   }
 
 
@@ -201,70 +241,93 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     const panels = transformPanels(response);
     this.log.debug(`Transformed panels from IntelliCenter: ${this.json(panels)}`);
 
-
+    const bodyIdMap = new Map<string, Body>();
+    let heaters = [] as ReadonlyArray<Heater>;
     for (const panel of panels) {
       for (const module of panel.modules) {
-        const circuits = (module.bodies as ReadonlyArray<Circuit>).concat(module.features);
-        for (const circuit of circuits) {
-          this.updateCircuit(panel, module, circuit);
-          // Register for status updates.
-          const command = {
-            command: IntelliCenterRequestCommand.RequestParamList,
-            messageID: uuidv4(),
-            objectList: [
-              {
-                objnam: circuit.id,
-                keys: [STATUS_KEY],
-              },
-            ],
-          } as IntelliCenterRequest;
-          // No need to await. We'll handle in the update handler.
-          this.sendCommandNoWait(command);
+        for (const body of module.bodies) {
+          this.discoverCircuit(panel, module, body);
+          this.subscribeForUpdates(body, [STATUS_KEY, LAST_TEMP_KEY, HEAT_SOURCE_KEY, HEATER_KEY, MODE_KEY]);
+          bodyIdMap.set(body.id, body);
         }
+        for (const feature of module.features) {
+          this.discoverCircuit(panel, module, feature);
+          this.subscribeForUpdates(feature, [STATUS_KEY]);
+        }
+        heaters = heaters.concat(module.heaters);
       }
+    }
+    for (const heater of heaters) {
+      this.discoverHeater(heater, bodyIdMap);
     }
   }
 
-  updateCircuit(panel: Panel, module: Module, circuit: Circuit) {
+  discoverHeater(heater: Heater, bodyMap: ReadonlyMap<string, Body>) {
+    heater.bodyIds.forEach((bodyId) => {
+      const body = bodyMap.get(bodyId);
+
+      if (body) {
+        const uuid = this.api.hap.uuid.generate(`${heater.id}.${bodyId}`);
+
+        let accessory = this.accessoryMap.get(uuid);
+        const name = `${body.name} ${heater.name}`;
+        if (accessory) {
+          this.log.debug(`Restoring existing heater from cache: ${accessory.displayName}`);
+          accessory.context.body = body;
+          accessory.context.heater = heater;
+          this.api.updatePlatformAccessories([accessory]);
+          new HeaterAccessory(this, accessory);
+        } else {
+          this.log.debug(`Adding new heater: ${heater.name}`);
+          accessory = new this.api.platformAccessory(name, uuid);
+          accessory.context.body = body;
+          accessory.context.heater = heater;
+          new HeaterAccessory(this, accessory);
+          this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+        }
+        this.heaters.set(uuid, accessory);
+      } else {
+        this.log.error(`Body not in bodyMap for ID ${bodyId}. Map: ${this.json(bodyMap)}`);
+      }
+    });
+  }
+
+  discoverCircuit(panel: Panel, module: Module, circuit: Circuit) {
     const uuid = this.api.hap.uuid.generate(circuit.id);
 
-    const existingAccessory = this.accessories.find(accessory => accessory.UUID === uuid);
+    const existingAccessory = this.accessoryMap.get(uuid);
 
     if (existingAccessory) {
-      // the accessory already exists
-      this.log.debug('Restoring existing accessory from cache:', existingAccessory.displayName);
-
+      this.log.debug(`Restoring existing circuit from cache: ${existingAccessory.displayName}`);
       existingAccessory.context.circuit = circuit;
       existingAccessory.context.module = module;
       existingAccessory.context.panel = panel;
       this.api.updatePlatformAccessories([existingAccessory]);
-
       new CircuitAccessory(this, existingAccessory);
-
-      // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
-      // remove platform accessories when no longer present
-      // this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
-      // this.log.info('Removing existing accessory from cache:', existingAccessory.displayName);
     } else {
-      // the accessory does not yet exist, so we need to create it
-      this.log.debug('Adding new accessory:', circuit.name);
-
-      // create a new accessory
+      this.log.debug(`Adding new circuit: ${circuit.name}`);
       const accessory = new this.api.platformAccessory(circuit.name, uuid);
-
-      // store a copy of the device object in the `accessory.context`
-      // the `context` property can be used to store any data about the accessory you may need
       accessory.context.circuit = circuit;
       accessory.context.module = module;
       accessory.context.panel = panel;
-
-      // create the accessory handler for the newly create accessory
-      // this is imported from `circuitAccessory.ts`
       new CircuitAccessory(this, accessory);
-
-      // link the accessory to your platform
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
     }
+  }
+
+  subscribeForUpdates(circuit: Circuit, keys: ReadonlyArray<string>) {
+    const command = {
+      command: IntelliCenterRequestCommand.RequestParamList,
+      messageID: uuidv4(),
+      objectList: [
+        {
+          objnam: circuit.id,
+          keys: keys,
+        },
+      ],
+    } as IntelliCenterRequest;
+    // No need to await. We'll handle in the update handler.
+    this.sendCommandNoWait(command);
   }
 
   getConfig(): PentairConfig {
@@ -302,7 +365,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
 
   sendCommandNoWait(command: IntelliCenterRequest): void {
     const commandString = JSON.stringify(command);
-    this.log.debug(`Sending command to IntelliCenter: ${commandString}`);
+    this.log.debug(`Sending fire and forget command to IntelliCenter: ${commandString}`);
     this.connection.send(commandString);
   }
 }

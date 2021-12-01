@@ -28,15 +28,6 @@ export class CircuitAccessory {
   private module: Module;
   private status: CircuitStatusMessage;
 
-  /**
-   * These are just used to create a working example
-   * You should implement your own code to track the state of your accessory
-   */
-  private exampleStates = {
-    On: false,
-    Brightness: 100,
-  };
-
   constructor(
     private readonly platform: PentairPlatform,
     private readonly accessory: PlatformAccessory,
@@ -47,7 +38,6 @@ export class CircuitAccessory {
     this.circuit = accessory.context.circuit as Circuit;
     this.status = accessory.context.status as CircuitStatusMessage;
 
-    // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
       .setCharacteristic(this.platform.Characteristic.Manufacturer, MANUFACTURER)
       .setCharacteristic(this.platform.Characteristic.Model, MODEL)
@@ -77,7 +67,7 @@ export class CircuitAccessory {
       messageID: uuidv4(),
       objectList: [{
         objnam: this.circuit.id,
-        params: {[STATUS_KEY]: value ? CircuitStatus.On : CircuitStatus.Off},
+        params: {[STATUS_KEY]: value ? CircuitStatus.On : CircuitStatus.Off} as never,
       } as CircuitStatusMessage],
     } as IntelliCenterRequest;
     this.platform.sendCommandNoWait(command);

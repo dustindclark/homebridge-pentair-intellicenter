@@ -23,6 +23,31 @@
         "type": "string",
         "required": true,
         "default": "*****"
+      },
+      "temperatureUnits": {
+        "title": "Temperature Units",
+        "description": "Celsius or Fahrenheit as configured in IntelliCenter",
+        "type": "string",
+        "required": true,
+        "default": "F",
+        "oneOf": [
+          { "title": "F", "enum": ["F"] },
+          { "title": "C", "enum": ["C"] }
+        ]
+      },
+      "minimumTemperature": {
+        "title": "Minimum Temperature",
+        "description": "Minimum temperature to be used by HomeKit slider. Use same units as configured above.",
+        "type": "number",
+        "required": true,
+        "default": "50"
+      },
+      "maximumTemperature": {
+        "title": "Maximum Temperature",
+        "description": "Maximum temperature to be used by HomeKit slider. Use same units as configured above.",
+        "type": "number",
+        "required": true,
+        "default": "104"
       }
     }
   }
