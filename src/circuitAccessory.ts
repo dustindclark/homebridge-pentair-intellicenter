@@ -12,7 +12,7 @@ import {
 } from './types';
 import {v4 as uuidv4} from 'uuid';
 import {MANUFACTURER} from './settings';
-import {ACT_KEY, DEFAULT_COLOR_TEMPERATURE, STATUS_KEY} from './constants';
+import {ACT_KEY, DEFAULT_BRIGHTNESS, DEFAULT_COLOR_TEMPERATURE, STATUS_KEY} from './constants';
 import {getIntelliBriteColor} from './util';
 
 const MODEL = 'Circuit';
@@ -112,6 +112,7 @@ export class CircuitAccessory {
       } as CircuitStatusMessage],
     } as IntelliCenterRequest;
     this.platform.sendCommandNoWait(command);
+    this.accessory.context.saturation = color.saturation;
     this.service.updateCharacteristic(this.platform.Characteristic.Hue, color.hue);
     this.service.updateCharacteristic(this.platform.Characteristic.Saturation, color.saturation);
   }
@@ -122,13 +123,13 @@ export class CircuitAccessory {
   }
 
   async setColorTemperature(value: CharacteristicValue) {
-    this.platform.log.debug(`Setting ${this.circuit.name} temperature to ${value}`);
-    this.accessory.context.temperature = value as number;
+    this.platform.log.debug(`Ignoring color temperature on ${this.circuit.name} to ${value}`);
+    this.service.updateCharacteristic(this.platform.Characteristic.Brightness, DEFAULT_COLOR_TEMPERATURE);
   }
 
   async setBrightness(value: CharacteristicValue) {
-    this.platform.log.warn(`Ignoring brightness value ${value}`);
-    this.service.updateCharacteristic(this.platform.Characteristic.Saturation, 100);
+    this.platform.log.warn(`Ignoring brightness value on ${this.circuit.name} to ${value}`);
+    this.service.updateCharacteristic(this.platform.Characteristic.Brightness, DEFAULT_BRIGHTNESS);
   }
 
   async getColorHue(): Promise<CharacteristicValue> {
@@ -140,11 +141,11 @@ export class CircuitAccessory {
   }
 
   async getBrightness(): Promise<CharacteristicValue> {
-    return 100;
+    return DEFAULT_BRIGHTNESS;
   }
 
   async getColorTemperature(): Promise<CharacteristicValue> {
-    return this.accessory.context.temperature || DEFAULT_COLOR_TEMPERATURE;
+    return DEFAULT_COLOR_TEMPERATURE;
   }
 
   /**
