@@ -4,7 +4,7 @@ import {PentairPlatform} from './platform';
 import {
   Circuit,
   CircuitStatus,
-  CircuitStatusMessage,
+  CircuitStatusMessage, CircuitType,
   IntelliCenterRequest,
   IntelliCenterRequestCommand,
   Module,
@@ -43,7 +43,14 @@ export class CircuitAccessory {
       .setCharacteristic(this.platform.Characteristic.Model, MODEL)
       .setCharacteristic(this.platform.Characteristic.SerialNumber, `${this.panel.id}.${this.module.id}.${this.circuit.id}`);
 
-    this.service = this.accessory.getService(this.platform.Service.Switch) || this.accessory.addService(this.platform.Service.Switch);
+    if (CircuitType.IntelliBrite === this.circuit.type) {
+      this.service = this.accessory.getService(this.platform.Service.Lightbulb)
+        || this.accessory.addService(this.platform.Service.Lightbulb);
+    } else {
+      this.service = this.accessory.getService(this.platform.Service.Switch)
+        || this.accessory.addService(this.platform.Service.Switch);
+    }
+
     this.service.setCharacteristic(this.platform.Characteristic.Name, this.circuit.name);
 
     if (this.accessory.context?.status?.params) {

@@ -48,15 +48,9 @@ export type IntelliCenterResponse = {
   objectList?: ReadonlyArray<CircuitStatusMessage>;
 } & IntelliCenterMessage;
 
-export type Circuit = {
-  id: string;
-  name: string;
-  objectType: ObjectType;
-};
-
-export enum CircuitStatus {
-  On = 'ON',
-  Off = 'OFF'
+export enum CircuitType {
+  IntelliBrite = 'INTELLI',
+  Generic = 'GENERIC'
 }
 
 export enum BodyType {
@@ -64,8 +58,16 @@ export enum BodyType {
   Spa = 'SPA',
 }
 
-export enum HeaterType {
-  Generic = 'GENERIC',
+export type Circuit = {
+  id: string;
+  name: string;
+  objectType: ObjectType;
+  type: CircuitType | BodyType;
+};
+
+export enum CircuitStatus {
+  On = 'ON',
+  Off = 'OFF',
 }
 
 export enum HeatMode {
@@ -74,7 +76,6 @@ export enum HeatMode {
 }
 
 export type Body = {
-  type: BodyType;
   temperature?: number;
   highTemperature?: number;
   lowTemperature?: number;
@@ -83,7 +84,6 @@ export type Body = {
 } & Circuit;
 
 export type Heater = {
-  type: HeaterType;
   bodyIds: ReadonlyArray<string>;
 } & Circuit;
 
@@ -107,7 +107,7 @@ export enum ObjectType {
   Heater = 'HEATER',
   CircuitGroup = 'CIRCGRP',
   Pump = 'PUMP',
-  Sensor = 'SENSE'
+  Sensor = 'SENSE',
 }
 
 export const CircuitTypes = new Set([ObjectType.Circuit, ObjectType.Body]) as ReadonlySet<ObjectType>;
