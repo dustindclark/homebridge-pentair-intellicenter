@@ -41,7 +41,7 @@ export class HeaterAccessory {
     this.body = this.accessory.context.body;
 
     this.platform.log.debug(`Setting accessory details for device: ${JSON.stringify(this.heater, null, 2)}`);
-    this.isFahrenheit = this.platform.getConfig().temperatureUnits === TemperatureUnits.F;
+    this.isFahrenheit = this.platform.getConfig().temperatureUnits !== TemperatureUnits.C;
 
     this.minValue = this.platform.getConfig().minimumTemperature;
     this.maxValue = this.platform.getConfig().maximumTemperature;
