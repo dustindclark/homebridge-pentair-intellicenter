@@ -26,6 +26,10 @@ const transformHeaters = (heaters: never[]): ReadonlyArray<Heater> => {
   });
 };
 
+const circuitParams = new Map([
+  ['status', 'STATUS'],
+]) as ReadonlyMap<string, string>;
+
 const bodyParams = new Map([
   ['temperature', LAST_TEMP_KEY],
   ['highTemperature', 'HITMP'],
@@ -34,6 +38,14 @@ const bodyParams = new Map([
   ['heatMode', 'HTMOD'],
   ['heatMode', 'MODE'],
 ]) as ReadonlyMap<string, string>;
+
+export const updateCircuit = (circuit: Body, params: never): void => {
+  circuitParams.forEach((value, key) => {
+    if (params[value]) {
+      circuit[key] = params[value];
+    }
+  });
+};
 
 export const updateBody = (body: Body, params: never): void => {
   bodyParams.forEach((value, key) => {

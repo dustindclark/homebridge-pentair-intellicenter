@@ -21,7 +21,7 @@ import {
   TemperatureUnits,
 } from './types';
 import {v4 as uuidv4} from 'uuid';
-import {transformPanels, updateBody} from './util';
+import {transformPanels, updateBody, updateCircuit} from './util';
 import {ACT_KEY, HEAT_SOURCE_KEY, HEATER_KEY, LAST_TEMP_KEY, MODE_KEY, STATUS_KEY} from './constants';
 import {HeaterAccessory} from './heaterAccessory';
 
@@ -191,8 +191,6 @@ export class PentairPlatform implements DynamicPlatformPlugin {
             const uuid = this.api.hap.uuid.generate(change.objnam);
             const existingAccessory = this.accessoryMap.get(uuid);
             if (existingAccessory) {
-              existingAccessory.context.status = change;
-
               if (CircuitTypes.has(existingAccessory.context.circuit.objectType)) {
                 this.updateCircuit(existingAccessory, change.params);
               }
@@ -207,6 +205,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
   }
 
   updateCircuit(accessory: PlatformAccessory, params: never) {
+    updateCircuit(accessory.context.circuit, params);
     if (accessory.context.circuit.objectType === ObjectType.Body) {
       const body = accessory.context.circuit as Body;
       updateBody(body, params);

@@ -63,6 +63,7 @@ export type Circuit = {
   name: string;
   objectType: ObjectType;
   type: CircuitType | BodyType;
+  status?: CircuitStatus;
 };
 
 export enum CircuitStatus {

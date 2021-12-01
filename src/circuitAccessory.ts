@@ -27,7 +27,6 @@ export class CircuitAccessory {
   private circuit: Circuit;
   private panel: Panel;
   private module: Module;
-  private status: CircuitStatusMessage;
   private color = Color.White;
 
   constructor(
@@ -38,7 +37,6 @@ export class CircuitAccessory {
     this.module = accessory.context.module as Module;
     this.panel = accessory.context.panel as Panel;
     this.circuit = accessory.context.circuit as Circuit;
-    this.status = accessory.context.status as CircuitStatusMessage;
 
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
       .setCharacteristic(this.platform.Characteristic.Manufacturer, MANUFACTURER)
@@ -71,9 +69,7 @@ export class CircuitAccessory {
 
     this.service.setCharacteristic(this.platform.Characteristic.Name, this.circuit.name);
 
-    if (this.accessory.context?.status?.params) {
-      this.service.updateCharacteristic(this.platform.Characteristic.On, this.getCircuitStatus());
-    }
+    this.service.updateCharacteristic(this.platform.Characteristic.On, this.getCircuitStatus());
 
     this.service.getCharacteristic(this.platform.Characteristic.On)
       .onSet(this.setOn.bind(this))
@@ -166,8 +162,8 @@ export class CircuitAccessory {
   }
 
   getCircuitStatus(): boolean {
-    if (this.accessory.context?.status?.params) {
-      return this.accessory.context.status.params[STATUS_KEY] === CircuitStatus.On;
+    if (this.accessory.context?.circuit?.status) {
+      return this.accessory.context.circuit.status === CircuitStatus.On;
     }
     return false;
   }
