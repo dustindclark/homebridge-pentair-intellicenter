@@ -174,10 +174,10 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     if (response.response && response.response !== IntelliCenterResponseStatus.Ok) {
       this.log.error(`Received unsuccessful response code ${response.response} from IntellCenter. Message: ${this.json(response)}`);
       return;
-    } else if (Object.values(IntelliCenterRequestCommand).includes(response.command as any)) {
+    } else if (Object.values(IntelliCenterRequestCommand).includes(response.command as never)) {
       this.log.debug(`Request with message ID ${response.messageID} was successful.`);
       return;
-    } else if (response.command === IntelliCenterResponseCommand.NotifyList || response.command === IntelliCenterResponseCommand.WriteParamList) {
+    } else if ([IntelliCenterResponseCommand.NotifyList, IntelliCenterResponseCommand.WriteParamList].includes(response.command)) {
       this.log.debug(`Handling IntelliCenter ${response.response} response to` +
         `${response.command}.${response.queryName} for message ID ${response.messageID}`);
       if (!response.objectList) {
