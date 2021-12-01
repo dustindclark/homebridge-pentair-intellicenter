@@ -12,7 +12,7 @@ import {
 } from './types';
 import {v4 as uuidv4} from 'uuid';
 import {MANUFACTURER} from './settings';
-import {STATUS_KEY} from './constants';
+import {ACT_KEY, STATUS_KEY} from './constants';
 
 const MODEL = 'Circuit';
 
@@ -46,6 +46,8 @@ export class CircuitAccessory {
     if (CircuitType.IntelliBrite === this.circuit.type) {
       this.service = this.accessory.getService(this.platform.Service.Lightbulb)
         || this.accessory.addService(this.platform.Service.Lightbulb);
+      this.service.getCharacteristic(this.platform.Characteristic.ColorTemperature)
+        .onSet(this.setColorTemperature.bind(this));
     } else {
       this.service = this.accessory.getService(this.platform.Service.Switch)
         || this.accessory.addService(this.platform.Service.Switch);
@@ -67,7 +69,6 @@ export class CircuitAccessory {
    * These are sent when the user changes the state of an accessory, for example, turning on a Light bulb.
    */
   async setOn(value: CharacteristicValue) {
-    // TODO
     this.platform.log.info(`Setting ${this.circuit.name} to ${value}`);
     const command = {
       command: IntelliCenterRequestCommand.SetParamList,
@@ -75,6 +76,21 @@ export class CircuitAccessory {
       objectList: [{
         objnam: this.circuit.id,
         params: {[STATUS_KEY]: value ? CircuitStatus.On : CircuitStatus.Off} as never,
+      } as CircuitStatusMessage],
+    } as IntelliCenterRequest;
+    this.platform.sendCommandNoWait(command);
+  }
+
+
+  async setColorTemperature(value: CharacteristicValue) {
+    this.platform.log.info(`Setting ${this.circuit.name} brightness to ${value}`);
+    const command = {
+      command: IntelliCenterRequestCommand.SetParamList,
+      messageID: uuidv4(),
+      objectList: [{
+        objnam: this.circuit.id,
+        // TODO
+        params: {[ACT_KEY]: `PARTY`} as never,
       } as CircuitStatusMessage],
     } as IntelliCenterRequest;
     this.platform.sendCommandNoWait(command);

@@ -6,6 +6,7 @@ export const OBJ_SUBTYPE_KEY = 'SUBTYP';
 export const OBJ_LIST_KEY = 'OBJLIST';
 export const CIRCUITS_KEY = 'CIRCUITS';
 export const STATUS_KEY = 'STATUS';
+export const ACT_KEY = 'ACT';
 export const LAST_TEMP_KEY = 'LSTTMP';
 export const HEAT_SOURCE_KEY = 'HTSRC';
 export const HEATER_KEY = 'HEATER';

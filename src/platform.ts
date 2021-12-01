@@ -22,7 +22,7 @@ import {
 } from './types';
 import {v4 as uuidv4} from 'uuid';
 import {transformPanels, updateBody} from './util';
-import {HEAT_SOURCE_KEY, HEATER_KEY, LAST_TEMP_KEY, MODE_KEY, STATUS_KEY} from './constants';
+import {ACT_KEY, HEAT_SOURCE_KEY, HEATER_KEY, LAST_TEMP_KEY, MODE_KEY, STATUS_KEY} from './constants';
 import {HeaterAccessory} from './heaterAccessory';
 
 type PentairConfig = {
@@ -179,7 +179,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
       return;
     } else if ([IntelliCenterResponseCommand.NotifyList, IntelliCenterResponseCommand.WriteParamList].includes(response.command)) {
       this.log.debug(`Handling IntelliCenter ${response.response} response to` +
-        `${response.command}.${response.queryName} for message ID ${response.messageID}`);
+        `${response.command}.${response.queryName} for message ID ${response.messageID}: ${this.json(response)}`);
       if (!response.objectList) {
         this.log.error('Object list missing in NotifyList response.');
         return;
@@ -260,7 +260,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
         }
         for (const feature of module.features) {
           this.discoverCircuit(panel, module, feature);
-          this.subscribeForUpdates(feature, [STATUS_KEY]);
+          this.subscribeForUpdates(feature, [STATUS_KEY, ACT_KEY]);
         }
         heaters = heaters.concat(module.heaters);
       }
