@@ -1,4 +1,4 @@
-import {Body, Circuit, Heater, IntelliCenterResponse, Module, ObjectType, Panel} from './types';
+import {Body, Circuit, Color, Heater, IntelliCenterResponse, Module, ObjectType, Panel} from './types';
 import {
   CIRCUITS_KEY,
   LAST_TEMP_KEY,
@@ -109,4 +109,21 @@ export const fahrenheitToCelsius = (fValue: number): number => {
 
 export const celsiusToFahrenheit = (cValue: number): number => {
   return cValue * 1.8 + 32;
+};
+
+export const getIntelliBriteColor = (hue: number, saturation: number): Color => {
+  let color = Color.White;
+  // All other IntelliBrite colors have a saturation of 100.
+  if (saturation > ((Color.Red.saturation - Color.White.saturation) / 2)) {
+    if (hue < ((Color.Green.hue - Color.Red.hue) / 2 + Color.Red.hue)) {
+      color = Color.Red;
+    } else if (hue < ((Color.Blue.hue - Color.Green.hue) / 2 + Color.Green.hue)) {
+      color = Color.Green;
+    } else if (hue < ((Color.Magenta.hue - Color.Blue.hue) / 2 + Color.Blue.hue)) {
+      color = Color.Blue;
+    } else {
+      color = Color.Magenta;
+    }
+  }
+  return color;
 };

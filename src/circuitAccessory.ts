@@ -4,7 +4,7 @@ import {PentairPlatform} from './platform';
 import {
   Circuit,
   CircuitStatus,
-  CircuitStatusMessage, CircuitType,
+  CircuitStatusMessage, CircuitType, Color,
   IntelliCenterRequest,
   IntelliCenterRequestCommand,
   Module,
@@ -13,6 +13,7 @@ import {
 import {v4 as uuidv4} from 'uuid';
 import {MANUFACTURER} from './settings';
 import {ACT_KEY, STATUS_KEY} from './constants';
+import {getIntelliBriteColor} from './util';
 
 const MODEL = 'Circuit';
 
@@ -27,6 +28,7 @@ export class CircuitAccessory {
   private panel: Panel;
   private module: Module;
   private status: CircuitStatusMessage;
+  private color = Color.White;
 
   constructor(
     private readonly platform: PentairPlatform,
@@ -46,8 +48,14 @@ export class CircuitAccessory {
     if (CircuitType.IntelliBrite === this.circuit.type) {
       this.service = this.accessory.getService(this.platform.Service.Lightbulb)
         || this.accessory.addService(this.platform.Service.Lightbulb);
-      this.service.getCharacteristic(this.platform.Characteristic.ColorTemperature)
-        .onSet(this.setColorTemperature.bind(this));
+
+      this.service.getCharacteristic(this.platform.Characteristic.Hue)
+        .onSet(this.setColorHue.bind(this))
+        .onGet(this.getColorHue.bind(this));
+
+      this.service.getCharacteristic(this.platform.Characteristic.Saturation)
+        .onSet(this.setColorSaturation.bind(this))
+        .onGet(this.getColorSaturation.bind(this));
     } else {
       this.service = this.accessory.getService(this.platform.Service.Switch)
         || this.accessory.addService(this.platform.Service.Switch);
@@ -81,21 +89,34 @@ export class CircuitAccessory {
     this.platform.sendCommandNoWait(command);
   }
 
-
-  async setColorTemperature(value: CharacteristicValue) {
-    this.platform.log.info(`Setting ${this.circuit.name} brightness to ${value}`);
+  async setColorHue(value: CharacteristicValue) {
+    // Wait for saturation first. 10ms chosen arbitrarily.
+    await this.delay(10);
+    const saturation = this.accessory.context.saturation;
+    this.platform.log.info(`Setting ${this.circuit.name} hue to ${value}. Saturation is ${saturation}`);
     const command = {
       command: IntelliCenterRequestCommand.SetParamList,
       messageID: uuidv4(),
       objectList: [{
         objnam: this.circuit.id,
-        // TODO
-        params: {[ACT_KEY]: `PARTY`} as never,
+        params: {[ACT_KEY]: getIntelliBriteColor(value as number, saturation).intellicenterCode} as never,
       } as CircuitStatusMessage],
     } as IntelliCenterRequest;
     this.platform.sendCommandNoWait(command);
   }
 
+  async setColorSaturation(value: CharacteristicValue) {
+    this.platform.log.info(`Setting ${this.circuit.name} saturation to ${value}`);
+    this.accessory.context.saturation = value as number;
+  }
+
+  async getColorHue(): Promise<CharacteristicValue> {
+    return this.color.hue;
+  }
+
+  async getColorSaturation(): Promise<CharacteristicValue> {
+    return this.color.saturation;
+  }
 
   /**
    * Handle the "GET" requests from HomeKit
@@ -119,5 +140,9 @@ export class CircuitAccessory {
       return this.accessory.context.status.params[STATUS_KEY] === CircuitStatus.On;
     }
     return false;
+  }
+
+  private delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }

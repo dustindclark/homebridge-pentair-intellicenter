@@ -116,3 +116,17 @@ export enum TemperatureUnits {
   C = 'C',
   F = 'F',
 }
+
+export class Color {
+  public static readonly White = new Color( 'WHITER', 0, 0);
+  public static readonly Red = new Color( 'REDR', 0, 100);
+  public static readonly Green = new Color( 'GREENR', 120, 100);
+  public static readonly Blue = new Color( 'BLUER', 240, 100);
+  public static readonly Magenta = new Color( 'MAGNTAR', 300, 100);
+
+  private constructor(
+    public readonly intellicenterCode: string,
+    public readonly hue: number,
+    public readonly saturation: number) {
+  }
+}
