@@ -124,7 +124,7 @@ export class CircuitAccessory {
 
   async setColorTemperature(value: CharacteristicValue) {
     this.platform.log.debug(`Ignoring color temperature on ${this.circuit.name} to ${value}`);
-    this.service.updateCharacteristic(this.platform.Characteristic.Brightness, DEFAULT_COLOR_TEMPERATURE);
+    this.service.updateCharacteristic(this.platform.Characteristic.ColorTemperature, DEFAULT_COLOR_TEMPERATURE);
   }
 
   async setBrightness(value: CharacteristicValue) {
