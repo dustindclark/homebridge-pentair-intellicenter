@@ -95,7 +95,7 @@ export class CircuitAccessory {
 
   async setColorHue(value: CharacteristicValue) {
     // Wait for saturation first. 10ms chosen arbitrarily.
-    await this.delay(10);
+    await this.platform.delay(10);
     const saturation = this.accessory.context.saturation;
     this.platform.log.debug(`Setting ${this.circuit.name} hue to ${value}. Saturation is ${saturation}`);
     const color = getIntelliBriteColor(value as number, saturation);
@@ -166,9 +166,5 @@ export class CircuitAccessory {
       return this.accessory.context.circuit.status === CircuitStatus.On;
     }
     return false;
-  }
-
-  private delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }

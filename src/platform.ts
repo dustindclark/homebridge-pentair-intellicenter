@@ -140,7 +140,14 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     });
 
     this.connection.on('close', () => {
-      this.log.error('IntelliCenter socket has been closed. Check for error in logs above.');
+      this.log.error('IntelliCenter socket has been closed. Waiting 30 seconds and attempting to reconnect...');
+      this.delay(30000).then(() => {
+        this.log.info('Finished waiting. Attempting reconnect...');
+        this.discoverDevices().catch((error) => {
+          this.log.error('Failed to reconnect after socket closure. IntelliCenter will become unresponsive.' +
+            'Try restarting Homebridge.', error);
+        });
+      });
     });
 
     this.connection.on('error', (data) => {
@@ -373,6 +380,12 @@ export class PentairPlatform implements DynamicPlatformPlugin {
   sendCommandNoWait(command: IntelliCenterRequest): void {
     const commandString = JSON.stringify(command);
     this.log.debug(`Sending fire and forget command to IntelliCenter: ${commandString}`);
-    this.connection.send(commandString);
+    this.connection.send(commandString).catch((error) => {
+      this.log.error('Caught error in sendCommandNoWait', error);
+    });
+  }
+
+  delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
