@@ -195,10 +195,12 @@ export class PentairPlatform implements DynamicPlatformPlugin {
         const changes = (objListResponse.changes || [objListResponse]) as ReadonlyArray<CircuitStatusMessage>;
         changes.forEach((change) => {
           if (change.objnam && change.params) {
+            this.log.debug(`Handling update for ${change.objnam}`);
             const uuid = this.api.hap.uuid.generate(change.objnam);
             const existingAccessory = this.accessoryMap.get(uuid);
             if (existingAccessory) {
               if (CircuitTypes.has(existingAccessory.context.circuit.objectType)) {
+                this.log.debug(`Object is a circuit. Updating circuit: ${change.objnam}`);
                 this.updateCircuit(existingAccessory, change.params);
               }
             }
@@ -264,12 +266,15 @@ export class PentairPlatform implements DynamicPlatformPlugin {
           this.subscribeForUpdates(body, [STATUS_KEY, LAST_TEMP_KEY, HEAT_SOURCE_KEY, HEATER_KEY, MODE_KEY]);
           bodyIdMap.set(body.id, body);
         }
-        const features = module.features.concat(panel.features);
-        for (const feature of features) {
+        for (const feature of module.features) {
           this.discoverCircuit(panel, module, feature);
           this.subscribeForUpdates(feature, [STATUS_KEY, ACT_KEY]);
         }
         heaters = heaters.concat(module.heaters);
+      }
+      for (const feature of panel.features) {
+        this.discoverCircuit(panel, null, feature);
+        this.subscribeForUpdates(feature, [STATUS_KEY, ACT_KEY]);
       }
     }
     for (const heater of heaters) {
@@ -307,7 +312,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     });
   }
 
-  discoverCircuit(panel: Panel, module: Module, circuit: Circuit) {
+  discoverCircuit(panel: Panel, module: Module | null, circuit: Circuit) {
     const uuid = this.api.hap.uuid.generate(circuit.id);
 
     const existingAccessory = this.accessoryMap.get(uuid);

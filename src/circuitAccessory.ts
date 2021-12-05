@@ -26,7 +26,7 @@ export class CircuitAccessory {
   private service: Service;
   private circuit: Circuit;
   private panel: Panel;
-  private module: Module;
+  private module: Module | null;
   private color = Color.White;
 
   constructor(
@@ -38,10 +38,12 @@ export class CircuitAccessory {
     this.panel = accessory.context.panel as Panel;
     this.circuit = accessory.context.circuit as Circuit;
 
+    const serial = this.module ? `${this.panel.id}.${this.module.id}.${this.circuit.id}` :
+      `${this.panel.id}.${this.circuit.id}`;
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
       .setCharacteristic(this.platform.Characteristic.Manufacturer, MANUFACTURER)
       .setCharacteristic(this.platform.Characteristic.Model, MODEL)
-      .setCharacteristic(this.platform.Characteristic.SerialNumber, `${this.panel.id}.${this.module.id}.${this.circuit.id}`);
+      .setCharacteristic(this.platform.Characteristic.SerialNumber, serial);
 
     if (CircuitType.IntelliBrite === this.circuit.type) {
       this.service = this.accessory.getService(this.platform.Service.Lightbulb)
@@ -163,6 +165,7 @@ export class CircuitAccessory {
 
   getCircuitStatus(): boolean {
     if (this.accessory.context?.circuit?.status) {
+      this.platform.log.debug(`Circuit ${this.circuit.name} status is ${this.accessory.context.circuit.status }`);
       return this.accessory.context.circuit.status === CircuitStatus.On;
     }
     return false;
