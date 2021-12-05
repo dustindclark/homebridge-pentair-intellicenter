@@ -226,7 +226,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
 
   updateHeaterStatuses(body: Body) {
     this.heaters.forEach(((heaterAccessory) => {
-      if (heaterAccessory.context.body.id === body.id) {
+      if (heaterAccessory.context.body?.id === body.id) {
         heaterAccessory.context.body = body;
         this.api.updatePlatformAccessories([heaterAccessory]);
         new HeaterAccessory(this, heaterAccessory);
