@@ -264,7 +264,8 @@ export class PentairPlatform implements DynamicPlatformPlugin {
           this.subscribeForUpdates(body, [STATUS_KEY, LAST_TEMP_KEY, HEAT_SOURCE_KEY, HEATER_KEY, MODE_KEY]);
           bodyIdMap.set(body.id, body);
         }
-        for (const feature of module.features) {
+        const features = module.features.concat(panel.features);
+        for (const feature of features) {
           this.discoverCircuit(panel, module, feature);
           this.subscribeForUpdates(feature, [STATUS_KEY, ACT_KEY]);
         }

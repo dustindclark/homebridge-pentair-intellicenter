@@ -98,6 +98,7 @@ export type Module = {
 export type Panel = {
   id: string;
   modules: ReadonlyArray<Module>;
+  features: ReadonlyArray<Circuit>;
 };
 
 export enum ObjectType {

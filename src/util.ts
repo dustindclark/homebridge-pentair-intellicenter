@@ -108,9 +108,11 @@ const transformModules = (modules: never[]): ReadonlyArray<Module> => {
 
 export const transformPanels = (response: IntelliCenterResponse): ReadonlyArray<Panel> => {
   return response.answer.filter(moduleObj => moduleObj[PARAMS_KEY][OBJ_TYPE_KEY] === ObjectType.Panel).map(panelObj => {
+    const objList = panelObj[PARAMS_KEY][OBJ_LIST_KEY];
     return {
       id: panelObj[OBJ_ID_KEY],
-      modules: transformModules(panelObj[PARAMS_KEY][OBJ_LIST_KEY]),
+      modules: transformModules(objList),
+      features: transformFeatures(objList), // Some features are directly on panel.
     } as Panel;
   });
 };
