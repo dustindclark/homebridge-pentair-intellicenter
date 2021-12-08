@@ -2,7 +2,7 @@ import {API, Characteristic, DynamicPlatformPlugin, Logger, PlatformAccessory, P
 
 import {PLATFORM_NAME, PLUGIN_NAME} from './settings';
 import {CircuitAccessory} from './circuitAccessory';
-import Telnet, {SendOptions} from 'telnet-client';
+import Telnet from 'telnet-client';
 import {
   Body,
   Circuit,
