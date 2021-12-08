@@ -184,6 +184,9 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     } else if (Object.values(IntelliCenterRequestCommand).includes(response.command as never)) {
       this.log.debug(`Request with message ID ${response.messageID} was successful.`);
       return;
+    } else if (IntelliCenterResponseCommand.SendQuery === response.command &&
+      IntelliCenterQueryName.GetHardwareDefinition === response.queryName) {
+      this.handleDiscoveryResponse(response);
     } else if ([IntelliCenterResponseCommand.NotifyList, IntelliCenterResponseCommand.WriteParamList].includes(response.command)) {
       this.log.debug(`Handling IntelliCenter ${response.response} response to` +
         `${response.command}.${response.queryName} for message ID ${response.messageID}: ${this.json(response)}`);
@@ -251,13 +254,10 @@ export class PentairPlatform implements DynamicPlatformPlugin {
       arguments: '',
       messageID: uuidv4(),
     } as IntelliCenterRequest;
-    let response;
-    try {
-      response = await this.sendCommand(command);
-    } catch (error) {
-      this.log.error(`Failed to send command to IntelliCenter: ${this.json(command)}`, error);
-      return;
-    }
+    this.sendCommandNoWait(command);
+  }
+
+  handleDiscoveryResponse(response: IntelliCenterResponse) {
     const panels = transformPanels(response);
     this.log.debug(`Transformed panels from IntelliCenter: ${this.json(panels)}`);
 
@@ -362,36 +362,11 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     return JSON.stringify(data, null, 2);
   }
 
-  async sendCommand(command: IntelliCenterRequest): Promise<IntelliCenterResponse> {
-    const commandString = JSON.stringify(command);
-    this.log.debug(`Sending command to IntelliCenter: ${commandString}`);
-    const options = {
-      waitFor: command.messageID,
-    } as SendOptions;
-    const result = await this.connection.send(commandString, options);
-    this.log.debug(`Command sent successfully. Result: ${result}`);
-    // hack. Sometimes responses include other data.
-    const lines = result.split(/\n/);
-    for (const line of lines) {
-      if (line) {
-        try {
-          const response = JSON.parse(line) as IntelliCenterResponse;
-          if (response.messageID === command.messageID) {
-            return response;
-          }
-        } catch (error) {
-          this.log.error(`Caught unexpected error parsing result line: ${line}`, error);
-        }
-      }
-    }
-    throw new Error(`Received response without correct message ID from IntelliCenter: ${result}`);
-  }
-
   sendCommandNoWait(command: IntelliCenterRequest): void {
     const commandString = JSON.stringify(command);
     this.log.debug(`Sending fire and forget command to IntelliCenter: ${commandString}`);
     this.connection.send(commandString).catch((error) => {
-      this.log.error('Caught error in sendCommandNoWait', error);
+      this.log.error(`Caught error in sendCommandNoWait for command ${this.json(command)}`, error);
     });
   }
 
