@@ -77,7 +77,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     this.api.on('didFinishLaunching', async () => {
       await this.connectToIntellicenter();
       try {
-        await this.discoverDevices();
+        this.discoverDevices();
       } catch (error) {
         this.log.error('IntelliCenter device discovery failed.', error);
       }
@@ -143,7 +143,10 @@ export class PentairPlatform implements DynamicPlatformPlugin {
       this.log.error('IntelliCenter socket has been closed. Waiting 30 seconds and attempting to reconnect...');
       this.delay(30000).then(() => {
         this.log.info('Finished waiting. Attempting reconnect...');
-        this.discoverDevices().catch((error) => {
+        this.connectToIntellicenter()
+          .then(() => {
+            this.discoverDevices();
+          }).catch((error) => {
           this.log.error('Failed to reconnect after socket closure. IntelliCenter will become unresponsive.' +
             'Try restarting Homebridge.', error);
         });
@@ -247,7 +250,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
    * Accessories must only be registered once, previously created accessories
    * must not be registered again to prevent "duplicate UUID" errors.
    */
-  async discoverDevices() {
+  discoverDevices() {
     const command = {
       command: IntelliCenterRequestCommand.GetQuery,
       queryName: IntelliCenterQueryName.GetHardwareDefinition,
