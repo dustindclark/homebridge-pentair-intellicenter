@@ -146,10 +146,11 @@ export class PentairPlatform implements DynamicPlatformPlugin {
         this.connectToIntellicenter()
           .then(() => {
             this.discoverDevices();
-          }).catch((error) => {
-          this.log.error('Failed to reconnect after socket closure. IntelliCenter will become unresponsive.' +
-            'Try restarting Homebridge.', error);
-        });
+          })
+          .catch((error) => {
+            this.log.error('Failed to reconnect after socket closure. IntelliCenter will become unresponsive.' +
+              'Try restarting Homebridge.', error);
+          });
       });
     });
 
