@@ -1,5 +1,5 @@
 {
-  "displayName": "Homebridge Pentair IntelliCenter Plugin",
+  "displayName": "Homebridge Pentair IntelliCenter",
   "name": "homebridge-pentair-intellicenter",
   "version": "1.0.24",
   "description": "Homebridge plugin for integrating Pentair IntelliCenter into HomeKit.",
