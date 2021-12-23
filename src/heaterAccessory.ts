@@ -172,7 +172,7 @@ export class HeaterAccessory {
 
   async setTargetTemperature(value: CharacteristicValue) {
     const convertedValue: number = this.isFahrenheit
-      ? Math.round(celsiusToFahrenheit(value as number) / 5) * 5 // Round to nearest 5
+      ? Math.round(celsiusToFahrenheit(value as number)) // Round to nearest 5
       : value as number;
 
     this.platform.log.debug(`Sending temperature ${value} converted/rounded to: ${convertedValue}`);
