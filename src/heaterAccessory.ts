@@ -130,7 +130,7 @@ export class HeaterAccessory {
   }
 
   async setMode(value: CharacteristicValue) {
-    this.platform.log.debug(`Set heat power to ${value} for heater ${this.heater.name}`);
+    this.platform.log.info(`Set heat power to ${value} for heater ${this.heater.name}`);
     let heater = this.heater.id;
     let mode = HeatMode.On;
     if (value === this.platform.Characteristic.TargetHeatingCoolingState.OFF) {
@@ -175,7 +175,8 @@ export class HeaterAccessory {
       ? Math.round(celsiusToFahrenheit(value as number)) // Round to nearest 5
       : value as number;
 
-    this.platform.log.debug(`Sending temperature ${value} converted/rounded to: ${convertedValue}`);
+    this.platform.log.info(`Setting temperature ${value} converted/rounded to: ${convertedValue}` +
+      `for heater ${this.heater.name}`);
     const command = {
       command: IntelliCenterRequestCommand.SetParamList, //Weirdly required.
       messageID: uuidv4(),

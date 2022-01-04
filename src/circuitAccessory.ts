@@ -83,7 +83,7 @@ export class CircuitAccessory {
    * These are sent when the user changes the state of an accessory, for example, turning on a Light bulb.
    */
   async setOn(value: CharacteristicValue) {
-    this.platform.log.debug(`Setting ${this.circuit.name} to ${value}`);
+    this.platform.log.info(`Setting ${this.circuit.name} to ${value}`);
     const command = {
       command: IntelliCenterRequestCommand.SetParamList,
       messageID: uuidv4(),
@@ -99,7 +99,7 @@ export class CircuitAccessory {
     // Wait for saturation first. 10ms chosen arbitrarily.
     await this.platform.delay(10);
     const saturation = this.accessory.context.saturation;
-    this.platform.log.debug(`Setting ${this.circuit.name} hue to ${value}. Saturation is ${saturation}`);
+    this.platform.log.info(`Setting ${this.circuit.name} hue to ${value}. Saturation is ${saturation}`);
     const color = getIntelliBriteColor(value as number, saturation);
     const command = {
       command: IntelliCenterRequestCommand.SetParamList,
@@ -116,12 +116,12 @@ export class CircuitAccessory {
   }
 
   async setColorSaturation(value: CharacteristicValue) {
-    this.platform.log.debug(`Setting ${this.circuit.name} saturation to ${value}`);
+    this.platform.log.info(`Setting ${this.circuit.name} saturation to ${value}`);
     this.accessory.context.saturation = value as number;
   }
 
   async setColorTemperature(value: CharacteristicValue) {
-    this.platform.log.debug(`Ignoring color temperature on ${this.circuit.name} to ${value}`);
+    this.platform.log.warn(`Ignoring color temperature on ${this.circuit.name} to ${value}`);
     this.service.updateCharacteristic(this.platform.Characteristic.ColorTemperature, DEFAULT_COLOR_TEMPERATURE);
   }
 
