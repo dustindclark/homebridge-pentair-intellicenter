@@ -33,7 +33,7 @@ type PentairConfig = {
   temperatureUnits: TemperatureUnits;
   minimumTemperature: number;
   maximumTemperature: number;
-
+  isIntellicenter2: boolean;
 } & PlatformConfig;
 
 /**
@@ -255,13 +255,14 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     const command = {
       command: IntelliCenterRequestCommand.GetQuery,
       queryName: IntelliCenterQueryName.GetHardwareDefinition,
-      arguments: '',
+      arguments: this.getConfig().isIntellicenter2 ? 'CIRCUITS' : '', //PUMPS, CHEMS, VALVES, HEATERS, SENSORS, GROUPS,
       messageID: uuidv4(),
     } as IntelliCenterRequest;
     this.sendCommandNoWait(command);
   }
 
   handleDiscoveryResponse(response: IntelliCenterResponse) {
+    this.log.debug(`Discovery response from IntelliCenter: ${this.json(response)}`);
     const panels = transformPanels(response);
     this.log.debug(`Transformed panels from IntelliCenter: ${this.json(panels)}`);
 
