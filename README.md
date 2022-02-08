@@ -5,6 +5,8 @@
 
 </p>
 
+> :warning: **IntelliCenter firmware 1.064 appears to be a rewrite and has not been tested**: Do not upgrade IntelliCenter firmware until this readme has confirmed 1.064 is supported. The latest supported version is 1.047.
+
 
 # Homebridge Pentair IntelliCenter Plugin
 [![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
