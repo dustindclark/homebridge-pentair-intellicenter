@@ -1,4 +1,4 @@
-import {Body, Circuit, Color, Heater, IntelliCenterResponse, Module, ObjectType, Panel} from './types';
+import {Body, Circuit, Color, Heater, Module, ObjectType, Panel} from './types';
 import {
   CIRCUITS_KEY,
   LAST_TEMP_KEY,
@@ -106,8 +106,8 @@ const transformModules = (modules: never[]): ReadonlyArray<Module> => {
   });
 };
 
-export const transformPanels = (response: IntelliCenterResponse): ReadonlyArray<Panel> => {
-  return response.answer.filter(moduleObj => moduleObj[PARAMS_KEY][OBJ_TYPE_KEY] === ObjectType.Panel).map(panelObj => {
+export const transformPanels = (response: never | never[]): ReadonlyArray<Panel> => {
+  return response.filter(moduleObj => moduleObj[PARAMS_KEY][OBJ_TYPE_KEY] === ObjectType.Panel).map(panelObj => {
     const objList = panelObj[PARAMS_KEY][OBJ_LIST_KEY];
     return {
       id: panelObj[OBJ_ID_KEY],
@@ -140,4 +140,28 @@ export const getIntelliBriteColor = (hue: number, saturation: number): Color => 
     }
   }
   return color;
+};
+
+export const isObject = (object: Record<string, unknown>) => {
+  if (typeof object === 'object') {
+    for (const key in object) {
+      if (Object.prototype.hasOwnProperty.call(object, key)) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+export const mergeResponse = (target, responseToAdd) => {
+  for (const key in responseToAdd) {
+    if (Object.prototype.hasOwnProperty.call(responseToAdd, key)) {
+      if (target[key] && isObject(target[key]) && isObject(responseToAdd[key])) {
+        mergeResponse(target[key], responseToAdd[key]);
+      } else {
+        target[key] = responseToAdd[key];
+      }
+    }
+  }
+  return target;
 };
