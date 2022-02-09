@@ -52,7 +52,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
   private readonly connection: Telnet;
   private readonly maxBufferSize: number;
   private readonly discoverCommandsSent: Array<string>;
-  private readonly discoveryBuffer: never | never[];
+  private discoveryBuffer: never | never[] | undefined;
   private buffer = '';
 
   constructor(
@@ -67,7 +67,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     const co = this.getConfig();
     this.maxBufferSize = co.maxBufferSize || 1048576; // Default to 1MB
     this.discoverCommandsSent = [];
-    this.discoveryBuffer = [];
+    this.discoveryBuffer = undefined;
 
     if (!co.ipAddress) {
       this.log.error('IP address is not configured. Cannot connect to Intellicenter');
@@ -273,13 +273,20 @@ export class PentairPlatform implements DynamicPlatformPlugin {
   handleDiscoveryResponse(response: IntelliCenterResponse) {
     this.log.debug(`Discovery response from IntelliCenter: ${this.json(response)} ` +
       `of type ${this.discoverCommandsSent[this.discoverCommandsSent.length - 1]}`);
-    mergeResponse(this.discoveryBuffer, response.answer);
+    if (this.discoveryBuffer === undefined) {
+      this.discoveryBuffer = response.answer;
+    } else {
+      mergeResponse(this.discoveryBuffer, response.answer);
+    }
+
     if (this.getConfig().isIntellicenter2 && this.discoverCommandsSent.length !== DISCOVER_COMMANDS.length) {
       // Send next discovery command and return until we're done.
       this.log.debug(`Merged ${this.discoverCommandsSent.length} of ${DISCOVER_COMMANDS.length} so far. Sending next command..`);
       this.discoverDeviceType(DISCOVER_COMMANDS[this.discoverCommandsSent.length]);
       return;
     }
+
+    this.log.debug(`Discovery commands completed. Response: ${this.json(this.discoveryBuffer)}`);
 
     const panels = transformPanels(this.discoveryBuffer);
     this.log.debug(`Transformed panels from IntelliCenter: ${this.json(panels)}`);

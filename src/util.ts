@@ -154,15 +154,29 @@ export const isObject = (object: Record<string, unknown>) => {
   return false;
 };
 
-export const mergeResponse = (target, responseToAdd) => {
-  for (const key in responseToAdd) {
+export const mergeResponseArray = (target: never[], responseToAdd: never[]): void => {
+  responseToAdd.forEach((itemToAdd) => {
+    const targetObject = target.find(targetItem => targetItem[OBJ_ID_KEY] === itemToAdd[OBJ_ID_KEY]);
+    if (targetObject) {
+      mergeResponse(targetObject, itemToAdd);
+    } else {
+      target.push(itemToAdd);
+    }
+  });
+};
+
+export const mergeResponse = (target: never | never[], responseToAdd: never): void => {
+  for (const key in responseToAdd as Record<string, unknown>) {
     if (Object.prototype.hasOwnProperty.call(responseToAdd, key)) {
       if (target[key] && isObject(target[key]) && isObject(responseToAdd[key])) {
-        mergeResponse(target[key], responseToAdd[key]);
+        if (Array.isArray(target[key]) && Array.isArray(responseToAdd[key])) {
+          mergeResponseArray(target[key], responseToAdd[key]);
+        } else {
+          mergeResponse(target[key], responseToAdd[key]);
+        }
       } else {
         target[key] = responseToAdd[key];
       }
     }
   }
-  return target;
 };

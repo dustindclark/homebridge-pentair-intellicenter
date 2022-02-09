@@ -1,0 +1,524 @@
+[
+  {
+    "objnam": "PNL01",
+    "params": {
+      "OBJTYP": "PANEL",
+      "SUBTYP": "OCP",
+      "HNAME": "PNL01",
+      "SNAME": "Panel 1",
+      "PANID": "SHARE",
+      "LISTORD": "1",
+      "VER": "VER",
+      "OBJLIST": [
+        {
+          "objnam": "M0101",
+          "params": {
+            "OBJTYP": "MODULE",
+            "SUBTYP": "I5P",
+            "SNAME": "M0101",
+            "LISTORD": "LISTORD",
+            "PARENT": "PNL01",
+            "PORT": "1",
+            "VER": "10.001",
+            "BADGE": "BADGE",
+            "CIRCUITS": [
+              {
+                "objnam": "B1101",
+                "params": {
+                  "OBJTYP": "BODY",
+                  "SUBTYP": "POOL",
+                  "SNAME": "Pool",
+                  "LISTORD": "1",
+                  "HITMP": "100",
+                  "LOTMP": "86",
+                  "HTSRC": "00000",
+                  "SHARE": "B1202",
+                  "PRIM": "65535",
+                  "SEC": "65535",
+                  "ACT1": "65535",
+                  "ACT2": "65535",
+                  "ACT3": "65535",
+                  "ACT4": "65535",
+                  "VOL": "15000",
+                  "MANHT": "00000",
+                  "MODE": "1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "objnam": "M0102",
+          "params": {
+            "OBJTYP": "MODULE",
+            "SUBTYP": "I8PS",
+            "SNAME": "M0102",
+            "LISTORD": "LISTORD",
+            "PARENT": "PNL01",
+            "PORT": "1",
+            "VER": "10.001",
+            "BADGE": "BADGE",
+            "CIRCUITS": [
+              {
+                "objnam": "B1202",
+                "params": {
+                  "OBJTYP": "BODY",
+                  "SUBTYP": "SPA",
+                  "SNAME": "Spa",
+                  "LISTORD": "2",
+                  "HITMP": "103",
+                  "LOTMP": "103",
+                  "HTSRC": "H0001",
+                  "SHARE": "B1101",
+                  "PRIM": "65535",
+                  "SEC": "65535",
+                  "ACT1": "65535",
+                  "ACT2": "65535",
+                  "ACT3": "65535",
+                  "ACT4": "65535",
+                  "VOL": "1000",
+                  "MANHT": "00000",
+                  "MODE": "2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "objnam": "M0103",
+          "params": {
+            "OBJTYP": "MODULE",
+            "SUBTYP": "ANLGEXP",
+            "SNAME": "M0103",
+            "LISTORD": "LISTORD",
+            "PARENT": "PNL01",
+            "PORT": "1",
+            "VER": "10.001",
+            "BADGE": "BADGE",
+            "CIRCUITS": []
+          }
+        },
+        {
+          "objnam": "FTR01",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "GENERIC",
+            "HNAME": "FTR01",
+            "SNAME": "Spa Return",
+            "COVER": "COVER",
+            "LISTORD": "1",
+            "PARENT": "00000",
+            "BODY": "00000",
+            "FREEZE": "ON",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "720",
+            "RLY": "00000",
+            "DNTSTP": "OFF",
+            "FEATR": "ON"
+          }
+        },
+        {
+          "objnam": "X0034",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Heat Pump",
+            "SNAME": "Heat Pump",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0035",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "UltraTemp",
+            "SNAME": "UltraTemp",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0036",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Hybrid",
+            "SNAME": "Hybrid",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0037",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Heat Boost",
+            "SNAME": "Heat Boost",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0038",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Heat Enable",
+            "SNAME": "Heat Enable",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0039",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Pump Speed +",
+            "SNAME": "Pump Speed +",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0040",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Pump Speed -",
+            "SNAME": "Pump Speed -",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0043",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Cleaner",
+            "SNAME": "Cleaner",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0044",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Pool Heater",
+            "SNAME": "Pool Heater",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0045",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Spa Heater",
+            "SNAME": "Spa Heater",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0046",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Freeze",
+            "SNAME": "Freeze",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0047",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Pool/Spa",
+            "SNAME": "Pool/Spa",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0050",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Cleaners",
+            "SNAME": "Cleaners",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0051",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Heater",
+            "SNAME": "Heater",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0052",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Solar",
+            "SNAME": "Solar",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0053",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "All Lights Off",
+            "SNAME": "All Lights Off",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0054",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "All Lights On",
+            "SNAME": "All Lights On",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "X0055",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "Generic",
+            "HNAME": "Pool Heat Enable",
+            "SNAME": "Pool Heat Enable",
+            "COVER": "COVER",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "BODY",
+            "FREEZE": "FREEZE",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "TIME",
+            "RLY": "RLY",
+            "DNTSTP": "DNTSTP",
+            "FEATR": "FEATR"
+          }
+        },
+        {
+          "objnam": "_A110",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "ALL",
+            "HNAME": "_A110",
+            "SNAME": "All Lights Off",
+            "COVER": "OFF",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "00000",
+            "FREEZE": "OFF",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "0",
+            "RLY": "RLY",
+            "DNTSTP": "OFF",
+            "FEATR": "OFF"
+          }
+        },
+        {
+          "objnam": "_A111",
+          "params": {
+            "OBJTYP": "CIRCUIT",
+            "SUBTYP": "ALL",
+            "HNAME": "_A111",
+            "SNAME": "All Lights On",
+            "COVER": "OFF",
+            "LISTORD": "LISTORD",
+            "PARENT": "00000",
+            "BODY": "00000",
+            "FREEZE": "OFF",
+            "VER": "VER",
+            "TIMZON": "TIMZON",
+            "TIME": "0",
+            "RLY": "RLY",
+            "DNTSTP": "OFF",
+            "FEATR": "OFF"
+          }
+        }
+      ]
+    }
+  }
+]

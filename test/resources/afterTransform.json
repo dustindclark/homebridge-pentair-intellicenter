@@ -1,0 +1,107 @@
+[
+  {
+    "features":[
+
+    ],
+    "id":"PNL01",
+    "modules":[
+      {
+        "bodies":[
+          {
+            "heatMode":"1",
+            "heaterId":"00000",
+            "highTemperature":"100",
+            "id":"B1101",
+            "lowTemperature":"86",
+            "name":"Pool",
+            "objectType":"BODY",
+            "type":"POOL"
+          }
+        ],
+        "features":[
+          {
+            "id":"C0002",
+            "name":"Scuppers",
+            "objectType":"CIRCUIT",
+            "type":"GENERIC"
+          },
+          {
+            "id":"C0003",
+            "name":"Air Blower",
+            "objectType":"CIRCUIT",
+            "type":"GENERIC"
+          },
+          {
+            "id":"C0004",
+            "name":"Spa Light",
+            "objectType":"CIRCUIT",
+            "type":"INTELLI"
+          },
+          {
+            "id":"C0005",
+            "name":"Pool Light",
+            "objectType":"CIRCUIT",
+            "type":"INTELLI"
+          }
+        ],
+        "heaters":[
+
+        ],
+        "id":"M0101",
+        "type":"I5P"
+      },
+      {
+        "bodies":[
+          {
+            "heatMode":"1",
+            "heaterId":"00000",
+            "highTemperature":"103",
+            "id":"B1202",
+            "lowTemperature":"103",
+            "name":"Spa",
+            "objectType":"BODY",
+            "type":"SPA"
+          }
+        ],
+        "features":[
+          {
+            "id":"C0007",
+            "name":"Cleaner",
+            "objectType":"CIRCUIT",
+            "type":"GENERIC"
+          },
+          {
+            "id":"C0008",
+            "name":"Pool High Speed",
+            "objectType":"CIRCUIT",
+            "type":"GENERIC"
+          },
+          {
+            "id":"C0009",
+            "name":"Pool Low Speed",
+            "objectType":"CIRCUIT",
+            "type":"GENERIC"
+          }
+        ],
+        "heaters":[
+
+        ],
+        "id":"M0102",
+        "type":"I8PS"
+      },
+      {
+        "bodies":[
+
+        ],
+        "features":[
+
+        ],
+        "heaters":[
+
+        ],
+        "id":"M0103",
+        "type":"ANLGEXP"
+      }
+    ]
+  }
+]
