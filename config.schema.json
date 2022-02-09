@@ -48,13 +48,6 @@
         "type": "number",
         "required": true,
         "default": "104"
-      },
-      "isIntellicenter2": {
-        "title": "IntelliCenter 2?",
-        "type": "boolean",
-        "required": false,
-        "description": "Check if your IntelliCenter is on firmware version 1.064 or above.",
-        "default": false
       }
     }
   }

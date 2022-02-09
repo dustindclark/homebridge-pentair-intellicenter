@@ -33,7 +33,6 @@ type PentairConfig = {
   temperatureUnits: TemperatureUnits;
   minimumTemperature: number;
   maximumTemperature: number;
-  isIntellicenter2: boolean;
 } & PlatformConfig;
 
 /**
@@ -256,7 +255,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
    * must not be registered again to prevent "duplicate UUID" errors.
    */
   discoverDevices() {
-    this.discoverDeviceType(this.getConfig().isIntellicenter2 ? DISCOVER_COMMANDS[0] : '');
+    this.discoverDeviceType(DISCOVER_COMMANDS[0]);
   }
 
   discoverDeviceType(deviceType: string) {
@@ -279,7 +278,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
       mergeResponse(this.discoveryBuffer, response.answer);
     }
 
-    if (this.getConfig().isIntellicenter2 && this.discoverCommandsSent.length !== DISCOVER_COMMANDS.length) {
+    if (this.discoverCommandsSent.length !== DISCOVER_COMMANDS.length) {
       // Send next discovery command and return until we're done.
       this.log.debug(`Merged ${this.discoverCommandsSent.length} of ${DISCOVER_COMMANDS.length} so far. Sending next command..`);
       this.discoverDeviceType(DISCOVER_COMMANDS[this.discoverCommandsSent.length]);
