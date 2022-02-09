@@ -5,8 +5,10 @@
 
 </p>
 
-> :warning: **IntelliCenter firmware 1.064 appears to be a rewrite and has not been tested**: Do not upgrade IntelliCenter firmware until this readme has confirmed 1.064 is supported. The latest supported version is 1.047.
-
+> :warning: **Version 2.x+ of this plugin only works with IntelliCenter version 1.064 and higher.**
+> If you are on an older version of IntelliCenter firmware, it is recommended that you
+> [upgrade your IntelliCenter firmware](https://www.pentair.com/en-us/education-support/residential/product-support/pentair-pool-and-spa-software-downloads/intellicenter-download.html).
+> If you prefer to remain on older IntelliCenter firmware, you should install the latest 1.x version of this plugin. 
 
 # Homebridge Pentair IntelliCenter Plugin
 [![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
