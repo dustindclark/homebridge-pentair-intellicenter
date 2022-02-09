@@ -1,0 +1,152 @@
+[
+  {
+    "objnam": "PNL01",
+    "params": {
+      "OBJTYP": "PANEL",
+      "SUBTYP": "OCP",
+      "HNAME": "PNL01",
+      "SNAME": "Panel 1",
+      "PANID": "SHARE",
+      "LISTORD": "1",
+      "VER": "VER",
+      "OBJLIST": [
+        {
+          "objnam": "M0101",
+          "params": {
+            "OBJTYP": "MODULE",
+            "SUBTYP": "I5P",
+            "SNAME": "M0101",
+            "LISTORD": "LISTORD",
+            "PARENT": "PNL01",
+            "PORT": "1",
+            "VER": "10.001",
+            "BADGE": "BADGE",
+            "CIRCUITS": [
+              {
+                "objnam": "B1101",
+                "params": {
+                  "OBJTYP": "BODY",
+                  "SUBTYP": "POOL",
+                  "SNAME": "Pool",
+                  "LISTORD": "1",
+                  "HITMP": "100",
+                  "LOTMP": "86",
+                  "HTSRC": "00000",
+                  "SHARE": "B1202",
+                  "PRIM": "65535",
+                  "SEC": "65535",
+                  "ACT1": "65535",
+                  "ACT2": "65535",
+                  "ACT3": "65535",
+                  "ACT4": "65535",
+                  "VOL": "15000",
+                  "MANHT": "00000",
+                  "MODE": "1"
+                }
+              },
+              {
+                "objnam": "VAL01",
+                "params": {
+                  "SUBTYP": "LEGACY",
+                  "SNAME": "Valve A",
+                  "COMUART": "COMUART",
+                  "POSIT": "POSIT",
+                  "ASSIGN": "NONE",
+                  "DLY": "OFF",
+                  "CIRCUIT": "C0007"
+                }
+              },
+              {
+                "objnam": "VAL02",
+                "params": {
+                  "SUBTYP": "LEGACY",
+                  "SNAME": "Spa Return",
+                  "COMUART": "COMUART",
+                  "POSIT": "POSIT",
+                  "ASSIGN": "NONE",
+                  "DLY": "OFF",
+                  "CIRCUIT": "FTR01"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "objnam": "M0102",
+          "params": {
+            "OBJTYP": "MODULE",
+            "SUBTYP": "I8PS",
+            "SNAME": "M0102",
+            "LISTORD": "LISTORD",
+            "PARENT": "PNL01",
+            "PORT": "1",
+            "VER": "10.001",
+            "BADGE": "BADGE",
+            "CIRCUITS": [
+              {
+                "objnam": "B1202",
+                "params": {
+                  "OBJTYP": "BODY",
+                  "SUBTYP": "SPA",
+                  "SNAME": "Spa",
+                  "LISTORD": "2",
+                  "HITMP": "103",
+                  "LOTMP": "103",
+                  "HTSRC": "H0001",
+                  "SHARE": "B1101",
+                  "PRIM": "65535",
+                  "SEC": "65535",
+                  "ACT1": "65535",
+                  "ACT2": "65535",
+                  "ACT3": "65535",
+                  "ACT4": "65535",
+                  "VOL": "1000",
+                  "MANHT": "00000",
+                  "MODE": "2"
+                }
+              },
+              {
+                "objnam": "VAL03",
+                "params": {
+                  "SUBTYP": "LEGACY",
+                  "SNAME": "Intake",
+                  "COMUART": "COMUART",
+                  "POSIT": "POSIT",
+                  "ASSIGN": "INTAKE",
+                  "DLY": "OFF",
+                  "CIRCUIT": "00000"
+                }
+              },
+              {
+                "objnam": "VAL04",
+                "params": {
+                  "SUBTYP": "LEGACY",
+                  "SNAME": "Return",
+                  "COMUART": "COMUART",
+                  "POSIT": "POSIT",
+                  "ASSIGN": "RETURN",
+                  "DLY": "OFF",
+                  "CIRCUIT": "00000"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "objnam": "M0103",
+          "params": {
+            "OBJTYP": "MODULE",
+            "SUBTYP": "ANLGEXP",
+            "SNAME": "M0103",
+            "LISTORD": "LISTORD",
+            "PARENT": "PNL01",
+            "PORT": "1",
+            "VER": "10.001",
+            "BADGE": "BADGE",
+            "CIRCUITS": []
+          }
+        }
+      ]
+    }
+  }
+]

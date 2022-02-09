@@ -1,0 +1,320 @@
+[
+  {
+    "objnam": "PNL01",
+    "params": {
+      "OBJTYP": "PANEL",
+      "SUBTYP": "OCP",
+      "HNAME": "PNL01",
+      "SNAME": "Panel 1",
+      "PANID": "SHARE",
+      "LISTORD": "1",
+      "VER": "VER",
+      "OBJLIST": [
+        {
+          "objnam": "M0101",
+          "params": {
+            "OBJTYP": "MODULE",
+            "SUBTYP": "I5P",
+            "SNAME": "M0101",
+            "LISTORD": "LISTORD",
+            "PARENT": "PNL01",
+            "PORT": "1",
+            "VER": "10.001",
+            "BADGE": "BADGE",
+            "CIRCUITS": [
+              {
+                "objnam": "B1101",
+                "params": {
+                  "OBJTYP": "BODY",
+                  "SUBTYP": "POOL",
+                  "SNAME": "Pool",
+                  "LISTORD": "1",
+                  "HITMP": "100",
+                  "LOTMP": "86",
+                  "HTSRC": "00000",
+                  "SHARE": "B1202",
+                  "PRIM": "65535",
+                  "SEC": "65535",
+                  "ACT1": "65535",
+                  "ACT2": "65535",
+                  "ACT3": "65535",
+                  "ACT4": "65535",
+                  "VOL": "15000",
+                  "MANHT": "00000",
+                  "MODE": "1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "objnam": "M0102",
+          "params": {
+            "OBJTYP": "MODULE",
+            "SUBTYP": "I8PS",
+            "SNAME": "M0102",
+            "LISTORD": "LISTORD",
+            "PARENT": "PNL01",
+            "PORT": "1",
+            "VER": "10.001",
+            "BADGE": "BADGE",
+            "CIRCUITS": [
+              {
+                "objnam": "B1202",
+                "params": {
+                  "OBJTYP": "BODY",
+                  "SUBTYP": "SPA",
+                  "SNAME": "Spa",
+                  "LISTORD": "2",
+                  "HITMP": "103",
+                  "LOTMP": "103",
+                  "HTSRC": "H0001",
+                  "SHARE": "B1101",
+                  "PRIM": "65535",
+                  "SEC": "65535",
+                  "ACT1": "65535",
+                  "ACT2": "65535",
+                  "ACT3": "65535",
+                  "ACT4": "65535",
+                  "VOL": "1000",
+                  "MANHT": "00000",
+                  "MODE": "2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "objnam": "M0103",
+          "params": {
+            "OBJTYP": "MODULE",
+            "SUBTYP": "ANLGEXP",
+            "SNAME": "M0103",
+            "LISTORD": "LISTORD",
+            "PARENT": "PNL01",
+            "PORT": "1",
+            "VER": "10.001",
+            "BADGE": "BADGE",
+            "CIRCUITS": []
+          }
+        },
+        {
+          "objnam": "PMP01",
+          "params": {
+            "OBJTYP": "PUMP",
+            "SUBTYP": "VSF",
+            "SNAME": "Filter Pump",
+            "COMUART": "2",
+            "PRIMFLO": "2500",
+            "PRIMTIM": "1",
+            "SYSTIM": "5",
+            "MIN": "450",
+            "MAX": "3450",
+            "MINF": "20",
+            "MAXF": "140",
+            "PRIOR": "65535",
+            "BODY": "00000",
+            "SHARE": "SHARE",
+            "DLY": "DLY",
+            "SETTMP": "100",
+            "SETTMPNC": "1",
+            "OBJLIST": [
+              {
+                "objnam": "p0101",
+                "params": {
+                  "CIRCUIT": "C0006",
+                  "LISTORD": "1",
+                  "SPEED": "75",
+                  "BOOST": "BOOST",
+                  "SELECT": "GPM"
+                }
+              },
+              {
+                "objnam": "p0102",
+                "params": {
+                  "CIRCUIT": "C0001",
+                  "LISTORD": "2",
+                  "SPEED": "75",
+                  "BOOST": "BOOST",
+                  "SELECT": "GPM"
+                }
+              },
+              {
+                "objnam": "p0103",
+                "params": {
+                  "CIRCUIT": "C0007",
+                  "LISTORD": "3",
+                  "SPEED": "100",
+                  "BOOST": "BOOST",
+                  "SELECT": "GPM"
+                }
+              },
+              {
+                "objnam": "p0104",
+                "params": {
+                  "CIRCUIT": "C0008",
+                  "LISTORD": "4",
+                  "SPEED": "100",
+                  "BOOST": "BOOST",
+                  "SELECT": "GPM"
+                }
+              },
+              {
+                "objnam": "p0105",
+                "params": {
+                  "CIRCUIT": "C0009",
+                  "LISTORD": "5",
+                  "SPEED": "30",
+                  "BOOST": "BOOST",
+                  "SELECT": "GPM"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "objnam": "PMP02",
+          "params": {
+            "OBJTYP": "PUMP",
+            "SUBTYP": "SPEED",
+            "SNAME": "Scupper Pump",
+            "COMUART": "1",
+            "PRIMFLO": "3050",
+            "PRIMTIM": "1",
+            "SYSTIM": "5",
+            "MIN": "450",
+            "MAX": "3450",
+            "MINF": "0",
+            "MAXF": "0",
+            "PRIOR": "65535",
+            "BODY": "00000",
+            "SHARE": "SHARE",
+            "DLY": "DLY",
+            "SETTMP": "100",
+            "SETTMPNC": "1",
+            "OBJLIST": [
+              {
+                "objnam": "p0201",
+                "params": {
+                  "CIRCUIT": "C0002",
+                  "LISTORD": "1",
+                  "SPEED": "1450",
+                  "BOOST": "BOOST",
+                  "SELECT": "RPM"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "objnam": "PMP01",
+          "params": {
+            "OBJTYP": "PUMP",
+            "SUBTYP": "VSF",
+            "SNAME": "Filter Pump",
+            "COMUART": "2",
+            "PRIMFLO": "2500",
+            "PRIMTIM": "1",
+            "SYSTIM": "5",
+            "MIN": "450",
+            "MAX": "3450",
+            "MINF": "20",
+            "MAXF": "140",
+            "PRIOR": "65535",
+            "BODY": "00000",
+            "SHARE": "SHARE",
+            "DLY": "DLY",
+            "SETTMP": "100",
+            "SETTMPNC": "1",
+            "OBJLIST": [
+              {
+                "objnam": "p0101",
+                "params": {
+                  "CIRCUIT": "C0006",
+                  "LISTORD": "1",
+                  "SPEED": "75",
+                  "BOOST": "BOOST",
+                  "SELECT": "GPM"
+                }
+              },
+              {
+                "objnam": "p0102",
+                "params": {
+                  "CIRCUIT": "C0001",
+                  "LISTORD": "2",
+                  "SPEED": "75",
+                  "BOOST": "BOOST",
+                  "SELECT": "GPM"
+                }
+              },
+              {
+                "objnam": "p0103",
+                "params": {
+                  "CIRCUIT": "C0007",
+                  "LISTORD": "3",
+                  "SPEED": "100",
+                  "BOOST": "BOOST",
+                  "SELECT": "GPM"
+                }
+              },
+              {
+                "objnam": "p0104",
+                "params": {
+                  "CIRCUIT": "C0008",
+                  "LISTORD": "4",
+                  "SPEED": "100",
+                  "BOOST": "BOOST",
+                  "SELECT": "GPM"
+                }
+              },
+              {
+                "objnam": "p0105",
+                "params": {
+                  "CIRCUIT": "C0009",
+                  "LISTORD": "5",
+                  "SPEED": "30",
+                  "BOOST": "BOOST",
+                  "SELECT": "GPM"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "objnam": "PMP02",
+          "params": {
+            "OBJTYP": "PUMP",
+            "SUBTYP": "SPEED",
+            "SNAME": "Scupper Pump",
+            "COMUART": "1",
+            "PRIMFLO": "3050",
+            "PRIMTIM": "1",
+            "SYSTIM": "5",
+            "MIN": "450",
+            "MAX": "3450",
+            "MINF": "0",
+            "MAXF": "0",
+            "PRIOR": "65535",
+            "BODY": "00000",
+            "SHARE": "SHARE",
+            "DLY": "DLY",
+            "SETTMP": "100",
+            "SETTMPNC": "1",
+            "OBJLIST": [
+              {
+                "objnam": "p0201",
+                "params": {
+                  "CIRCUIT": "C0002",
+                  "LISTORD": "1",
+                  "SPEED": "1450",
+                  "BOOST": "BOOST",
+                  "SELECT": "RPM"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+]

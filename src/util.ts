@@ -1,4 +1,4 @@
-import {Body, Circuit, Color, Heater, IntelliCenterResponse, Module, ObjectType, Panel} from './types';
+import {Body, Circuit, Color, Heater, Module, ObjectType, Panel} from './types';
 import {
   CIRCUITS_KEY,
   LAST_TEMP_KEY,
@@ -77,7 +77,8 @@ const transformFeatures = (circuits: never[]): ReadonlyArray<Circuit> => {
     return [];
   }
   return circuits.filter(featureObj => {
-    return featureObj[PARAMS_KEY][OBJ_TYPE_KEY] === ObjectType.Circuit && featureObj[PARAMS_KEY]['FEATR'] === 'ON';
+    return featureObj[PARAMS_KEY][OBJ_TYPE_KEY] === ObjectType.Circuit && featureObj[PARAMS_KEY]['FEATR'] === 'ON'
+      && (featureObj[PARAMS_KEY][OBJ_SUBTYPE_KEY] as string)?.toUpperCase() !== 'LEGACY';
   }).map(featureObj => {
     const params = featureObj[PARAMS_KEY];
     return {
@@ -106,8 +107,8 @@ const transformModules = (modules: never[]): ReadonlyArray<Module> => {
   });
 };
 
-export const transformPanels = (response: IntelliCenterResponse): ReadonlyArray<Panel> => {
-  return response.answer.filter(moduleObj => moduleObj[PARAMS_KEY][OBJ_TYPE_KEY] === ObjectType.Panel).map(panelObj => {
+export const transformPanels = (response: never | never[]): ReadonlyArray<Panel> => {
+  return response.filter(moduleObj => moduleObj[PARAMS_KEY][OBJ_TYPE_KEY] === ObjectType.Panel).map(panelObj => {
     const objList = panelObj[PARAMS_KEY][OBJ_LIST_KEY];
     return {
       id: panelObj[OBJ_ID_KEY],
@@ -140,4 +141,42 @@ export const getIntelliBriteColor = (hue: number, saturation: number): Color => 
     }
   }
   return color;
+};
+
+export const isObject = (object: Record<string, unknown>) => {
+  if (typeof object === 'object') {
+    for (const key in object) {
+      if (Object.prototype.hasOwnProperty.call(object, key)) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+export const mergeResponseArray = (target: never[], responseToAdd: never[]): void => {
+  responseToAdd.forEach((itemToAdd) => {
+    const targetObject = target.find(targetItem => targetItem[OBJ_ID_KEY] === itemToAdd[OBJ_ID_KEY]);
+    if (targetObject) {
+      mergeResponse(targetObject, itemToAdd);
+    } else {
+      target.push(itemToAdd);
+    }
+  });
+};
+
+export const mergeResponse = (target: never | never[], responseToAdd: never): void => {
+  for (const key in responseToAdd as Record<string, unknown>) {
+    if (Object.prototype.hasOwnProperty.call(responseToAdd, key)) {
+      if (target[key] && isObject(target[key]) && isObject(responseToAdd[key])) {
+        if (Array.isArray(target[key]) && Array.isArray(responseToAdd[key])) {
+          mergeResponseArray(target[key], responseToAdd[key]);
+        } else {
+          mergeResponse(target[key], responseToAdd[key]);
+        }
+      } else {
+        target[key] = responseToAdd[key];
+      }
+    }
+  }
 };

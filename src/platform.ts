@@ -21,8 +21,8 @@ import {
   TemperatureUnits,
 } from './types';
 import {v4 as uuidv4} from 'uuid';
-import {transformPanels, updateBody, updateCircuit} from './util';
-import {ACT_KEY, HEAT_SOURCE_KEY, HEATER_KEY, LAST_TEMP_KEY, MODE_KEY, STATUS_KEY} from './constants';
+import {mergeResponse, transformPanels, updateBody, updateCircuit} from './util';
+import {ACT_KEY, DISCOVER_COMMANDS, HEAT_SOURCE_KEY, HEATER_KEY, LAST_TEMP_KEY, MODE_KEY, STATUS_KEY} from './constants';
 import {HeaterAccessory} from './heaterAccessory';
 
 type PentairConfig = {
@@ -51,6 +51,8 @@ export class PentairPlatform implements DynamicPlatformPlugin {
 
   private readonly connection: Telnet;
   private readonly maxBufferSize: number;
+  private readonly discoverCommandsSent: Array<string>;
+  private discoveryBuffer: never | never[] | undefined;
   private buffer = '';
 
   constructor(
@@ -64,6 +66,8 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     this.setupSocketEventHandlers();
     const co = this.getConfig();
     this.maxBufferSize = co.maxBufferSize || 1048576; // Default to 1MB
+    this.discoverCommandsSent = [];
+    this.discoveryBuffer = undefined;
 
     if (!co.ipAddress) {
       this.log.error('IP address is not configured. Cannot connect to Intellicenter');
@@ -183,7 +187,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
 
   async handleUpdate(response: IntelliCenterResponse) {
     if (response.response && response.response !== IntelliCenterResponseStatus.Ok) {
-      this.log.error(`Received unsuccessful response code ${response.response} from IntellCenter. Message: ${this.json(response)}`);
+      this.log.error(`Received unsuccessful response code ${response.response} from IntelliCenter. Message: ${this.json(response)}`);
       return;
     } else if (Object.values(IntelliCenterRequestCommand).includes(response.command as never)) {
       this.log.debug(`Request with message ID ${response.messageID} was successful.`);
@@ -252,18 +256,39 @@ export class PentairPlatform implements DynamicPlatformPlugin {
    * must not be registered again to prevent "duplicate UUID" errors.
    */
   discoverDevices() {
+    this.discoverDeviceType(this.getConfig().isIntellicenter2 ? DISCOVER_COMMANDS[0] : '');
+  }
+
+  discoverDeviceType(deviceType: string) {
+    this.discoverCommandsSent.push(deviceType);
     const command = {
       command: IntelliCenterRequestCommand.GetQuery,
       queryName: IntelliCenterQueryName.GetHardwareDefinition,
-      arguments: this.getConfig().isIntellicenter2 ? 'CIRCUITS' : '', //PUMPS, CHEMS, VALVES, HEATERS, SENSORS, GROUPS,
+      arguments: deviceType,
       messageID: uuidv4(),
     } as IntelliCenterRequest;
     this.sendCommandNoWait(command);
   }
 
   handleDiscoveryResponse(response: IntelliCenterResponse) {
-    this.log.debug(`Discovery response from IntelliCenter: ${this.json(response)}`);
-    const panels = transformPanels(response);
+    this.log.debug(`Discovery response from IntelliCenter: ${this.json(response)} ` +
+      `of type ${this.discoverCommandsSent[this.discoverCommandsSent.length - 1]}`);
+    if (this.discoveryBuffer === undefined) {
+      this.discoveryBuffer = response.answer;
+    } else {
+      mergeResponse(this.discoveryBuffer, response.answer);
+    }
+
+    if (this.getConfig().isIntellicenter2 && this.discoverCommandsSent.length !== DISCOVER_COMMANDS.length) {
+      // Send next discovery command and return until we're done.
+      this.log.debug(`Merged ${this.discoverCommandsSent.length} of ${DISCOVER_COMMANDS.length} so far. Sending next command..`);
+      this.discoverDeviceType(DISCOVER_COMMANDS[this.discoverCommandsSent.length]);
+      return;
+    }
+
+    this.log.debug(`Discovery commands completed. Response: ${this.json(this.discoveryBuffer)}`);
+
+    const panels = transformPanels(this.discoveryBuffer);
     this.log.debug(`Transformed panels from IntelliCenter: ${this.json(panels)}`);
 
     const bodyIdMap = new Map<string, Body>();

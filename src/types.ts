@@ -44,7 +44,7 @@ export type IntelliCenterResponse = {
   command: IntelliCenterResponseCommand;
   description: string;
   response: IntelliCenterResponseStatus;
-  answer: never | never[];
+  answer: never;
   objectList?: ReadonlyArray<CircuitStatusMessage>;
 } & IntelliCenterMessage;
 
