@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "telnet-client": "^1.4.11",
-    "uuid": "^8.3.2"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/node": "^16.10.9",
