@@ -32,7 +32,7 @@
     "homekit intelli center"
   ],
   "dependencies": {
-    "telnet-client": "^1.4.11",
+    "telnet-client": "^2.0.4",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
