@@ -19,4 +19,9 @@ It connects directly to your IntelliCenter panel, so using a separate pool contr
 is not required. Currently, only the "Bodies", heaters, and circuits that are marked as "Features" in IntelliCenter
 will be exposed as switches in HomeKit.
 
-Also, along with the [Homebridge Alexa plugin](https://github.com/NorthernMan54/homebridge-alexa), this plugin can be used to expose your IntelliCenter circuits to Alexa. As far as I know, this is currently the only Alexa integration as the Alexa skill for IntelliCenter is no longer available. 
+Also, along with the [Homebridge Alexa plugin](https://github.com/NorthernMan54/homebridge-alexa), this plugin can be used to expose your IntelliCenter circuits to Alexa. As far as I know, this is currently the only Alexa integration as the Alexa skill for IntelliCenter is no longer available.
+
+## Troubleshooting
+- __Connection Errors__
+  - Try first rebooting your IntelliCenter panel, then reboot Homebridge.
+  - Ensure your IntelliCenter has a DHCP reservation or static IP address.
