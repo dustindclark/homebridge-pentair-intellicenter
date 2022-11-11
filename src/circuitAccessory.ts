@@ -4,7 +4,7 @@ import {PentairPlatform} from './platform';
 import {
   Circuit,
   CircuitStatus,
-  CircuitStatusMessage, CircuitType,
+  CircuitStatusMessage, CircuitType, Color,
   IntelliCenterRequest,
   IntelliCenterRequestCommand,
   Module,
@@ -130,11 +130,11 @@ export class CircuitAccessory {
   }
 
   async getColorHue(): Promise<CharacteristicValue> {
-    return this.accessory.context.color.hue;
+    return this.accessory.context.color?.hue ?? Color.White.saturation;
   }
 
   async getColorSaturation(): Promise<CharacteristicValue> {
-    return this.accessory.context.color.saturation;
+    return this.accessory.context.color?.saturation ?? Color.White.saturation;
   }
 
   async getBrightness(): Promise<CharacteristicValue> {
