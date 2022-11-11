@@ -27,7 +27,6 @@ export class CircuitAccessory {
   private circuit: Circuit;
   private panel: Panel;
   private module: Module | null;
-  private color = Color.White;
 
   constructor(
     private readonly platform: PentairPlatform,
@@ -100,19 +99,19 @@ export class CircuitAccessory {
     await this.platform.delay(10);
     const saturation = this.accessory.context.saturation;
     this.platform.log.info(`Setting ${this.circuit.name} hue to ${value}. Saturation is ${saturation}`);
-    const color = getIntelliBriteColor(value as number, saturation);
+    this.accessory.context.color = getIntelliBriteColor(value as number, saturation);
     const command = {
       command: IntelliCenterRequestCommand.SetParamList,
       messageID: uuidv4(),
       objectList: [{
         objnam: this.circuit.id,
-        params: {[ACT_KEY]: color.intellicenterCode} as never,
+        params: {[ACT_KEY]: this.accessory.context.color.intellicenterCode} as never,
       } as CircuitStatusMessage],
     } as IntelliCenterRequest;
     this.platform.sendCommandNoWait(command);
-    this.accessory.context.saturation = color.saturation;
-    this.service.updateCharacteristic(this.platform.Characteristic.Hue, color.hue);
-    this.service.updateCharacteristic(this.platform.Characteristic.Saturation, color.saturation);
+    this.accessory.context.saturation = this.accessory.context.color.saturation;
+    this.service.updateCharacteristic(this.platform.Characteristic.Hue, this.accessory.context.color.hue);
+    this.service.updateCharacteristic(this.platform.Characteristic.Saturation, this.accessory.context.color.saturation);
   }
 
   async setColorSaturation(value: CharacteristicValue) {
@@ -131,11 +130,11 @@ export class CircuitAccessory {
   }
 
   async getColorHue(): Promise<CharacteristicValue> {
-    return this.color.hue;
+    return this.accessory.context.color.hue;
   }
 
   async getColorSaturation(): Promise<CharacteristicValue> {
-    return this.color.saturation;
+    return this.accessory.context.color.saturation;
   }
 
   async getBrightness(): Promise<CharacteristicValue> {
