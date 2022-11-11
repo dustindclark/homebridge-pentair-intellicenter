@@ -4,7 +4,7 @@ import {PentairPlatform} from './platform';
 import {
   Circuit,
   CircuitStatus,
-  CircuitStatusMessage, CircuitType, Color,
+  CircuitStatusMessage, CircuitType,
   IntelliCenterRequest,
   IntelliCenterRequestCommand,
   Module,
