@@ -101,12 +101,7 @@ export class HeaterAccessory {
     if (this.temperature) {
       this.service.getCharacteristic(this.platform.Characteristic.CurrentTemperature)
         .onGet(this.getCurrentTemperature.bind(this))
-        .updateValue(this.temperature)
-        .setProps({
-          minValue: this.minValue,
-          maxValue: this.maxValue,
-          minStep: THERMOSTAT_STEP_VALUE,
-        });
+        .updateValue(this.temperature);
     }
 
     this.service.getCharacteristic(this.platform.Characteristic.TargetHeatingCoolingState)
