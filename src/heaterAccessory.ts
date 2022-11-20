@@ -13,7 +13,15 @@ import {
 } from './types';
 import {celsiusToFahrenheit, fahrenheitToCelsius} from './util';
 import {MANUFACTURER} from './settings';
-import {HEATER_KEY, NO_HEATER_ID, LOW_TEMP_KEY, STATUS_KEY, THERMOSTAT_STEP_VALUE} from './constants';
+import {
+  HEATER_KEY,
+  NO_HEATER_ID,
+  LOW_TEMP_KEY,
+  STATUS_KEY,
+  THERMOSTAT_STEP_VALUE,
+  CURRENT_TEMP_MIN_C,
+  CURRENT_TEMP_MAX_C,
+} from './constants';
 import {v4 as uuidv4} from 'uuid';
 
 /**
@@ -101,7 +109,12 @@ export class HeaterAccessory {
     if (this.temperature) {
       this.service.getCharacteristic(this.platform.Characteristic.CurrentTemperature)
         .onGet(this.getCurrentTemperature.bind(this))
-        .updateValue(this.temperature);
+        .updateValue(this.temperature)
+        .setProps({
+          minValue: CURRENT_TEMP_MIN_C,
+          maxValue: CURRENT_TEMP_MAX_C,
+          minStep: THERMOSTAT_STEP_VALUE,
+        });
     }
 
     this.service.getCharacteristic(this.platform.Characteristic.TargetHeatingCoolingState)

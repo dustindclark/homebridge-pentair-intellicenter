@@ -18,4 +18,7 @@ export const NO_HEATER_ID = '00000';
 export const DEFAULT_COLOR_TEMPERATURE = 140;
 export const DEFAULT_BRIGHTNESS = 100;
 
+export const CURRENT_TEMP_MIN_C = -100;
+export const CURRENT_TEMP_MAX_C = 100;
+
 export const DISCOVER_COMMANDS: ReadonlyArray<string> = ['CIRCUITS', 'PUMPS', 'CHEMS', 'VALVES', 'HEATERS', 'SENSORS', 'GROUPS'];
