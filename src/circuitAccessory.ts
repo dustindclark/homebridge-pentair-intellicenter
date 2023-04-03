@@ -37,7 +37,7 @@ export class CircuitAccessory {
     this.module = accessory.context.module as Module;
     this.panel = accessory.context.panel as Panel;
     this.circuit = accessory.context.circuit as Circuit;
-    this.pumpCircuit = accessory.context.pump as PumpCircuit;
+    this.pumpCircuit = accessory.context.pumpCircuit as PumpCircuit;
 
     const serial = this.module ? `${this.panel.id}.${this.module.id}.${this.circuit.id}` :
       `${this.panel.id}.${this.circuit.id}`;
