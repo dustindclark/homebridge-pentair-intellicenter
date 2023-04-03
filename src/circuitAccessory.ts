@@ -65,9 +65,6 @@ export class CircuitAccessory {
       this.service.getCharacteristic(this.platform.Characteristic.Brightness)
         .onSet(this.setBrightness.bind(this))
         .onGet(this.getBrightness.bind(this));
-    } else if (this.pumpCircuit) {
-      this.service = this.accessory.getService(this.platform.Service.Fan)
-        || this.accessory.addService(this.platform.Service.Fan);
     } else {
       this.service = this.accessory.getService(this.platform.Service.Switch)
         || this.accessory.addService(this.platform.Service.Switch);
@@ -77,16 +74,17 @@ export class CircuitAccessory {
 
     this.service.updateCharacteristic(this.platform.Characteristic.On, this.getCircuitStatus());
 
+    this.service.getCharacteristic(this.platform.Characteristic.On)
+      .onSet(this.setOn.bind(this))
+      .onGet(this.getOn.bind(this));
 
     if (this.pumpCircuit) {
+      this.service = this.accessory.getService(this.platform.Service.Fan)
+        || this.accessory.addService(this.platform.Service.Fan);
       this.service.getCharacteristic(this.platform.Characteristic.RotationSpeed)
         .onSet(this.setSpeed.bind(this))
         .onGet(this.getSpeed.bind(this))
         .updateValue(this.convertSpeedToPowerLevel());
-    } else {
-      this.service.getCharacteristic(this.platform.Characteristic.On)
-        .onSet(this.setOn.bind(this))
-        .onGet(this.getOn.bind(this));
     }
   }
 
@@ -211,6 +209,9 @@ export class CircuitAccessory {
   }
 
   async getSpeed(): Promise<Nullable<CharacteristicValue>> {
+    if (!this.getCircuitStatus()) {
+      return 0;
+    }
     return this.convertSpeedToPowerLevel();
   }
 
