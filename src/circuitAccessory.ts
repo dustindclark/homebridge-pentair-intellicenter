@@ -186,12 +186,6 @@ export class CircuitAccessory {
       this.platform.log.error('Tried to set speed when pump circuit is undefined.');
       return;
     }
-    if (value === 0) {
-      await this.setOn(0);
-      return;
-    } else if (!this.getCircuitStatus()) {
-      await this.setOn(1);
-    }
     const convertedValue = this.convertPowerLevelToSpeed(value as number);
 
     this.platform.log.info(`Setting speed for ${this.pumpCircuit.pump?.name} to ${value} converted/rounded to: ${convertedValue} ` +
@@ -209,9 +203,6 @@ export class CircuitAccessory {
   }
 
   async getSpeed(): Promise<Nullable<CharacteristicValue>> {
-    if (!this.getCircuitStatus()) {
-      return 0;
-    }
     return this.convertSpeedToPowerLevel();
   }
 
