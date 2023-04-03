@@ -115,29 +115,123 @@
     ],
     "pumps": [
       {
-        "id": "p0101",
+        "circuits": [
+          {
+            "circuitId": "C0006",
+            "id": "p0101",
+            "pump": {
+              "id": "PMP01",
+              "maxFlow": 140,
+              "maxRpm": 3450,
+              "minFlow": 20,
+              "minRpm": 450,
+              "name": "Filter Pump",
+              "objectType": "PUMP",
+              "type": "VSF"
+            },
+            "speed": 3400,
+            "speedType": "RPM"
+          },
+          {
+            "circuitId": "C0001",
+            "id": "p0102",
+            "pump": {
+              "id": "PMP01",
+              "maxFlow": 140,
+              "maxRpm": 3450,
+              "minFlow": 20,
+              "minRpm": 450,
+              "name": "Filter Pump",
+              "objectType": "PUMP",
+              "type": "VSF"
+            },
+            "speed": 60,
+            "speedType": "GPM"
+          },
+          {
+            "circuitId": "C0007",
+            "id": "p0103",
+            "pump": {
+              "id": "PMP01",
+              "maxFlow": 140,
+              "maxRpm": 3450,
+              "minFlow": 20,
+              "minRpm": 450,
+              "name": "Filter Pump",
+              "objectType": "PUMP",
+              "type": "VSF"
+            },
+            "speed": 3400,
+            "speedType": "RPM"
+          },
+          {
+            "circuitId": "C0008",
+            "id": "p0104",
+            "pump": {
+              "id": "PMP01",
+              "maxFlow": 140,
+              "maxRpm": 3450,
+              "minFlow": 20,
+              "minRpm": 450,
+              "name": "Filter Pump",
+              "objectType": "PUMP",
+              "type": "VSF"
+            },
+            "speed": 3400,
+            "speedType": "RPM"
+          },
+          {
+            "circuitId": "C0009",
+            "id": "p0105",
+            "pump": {
+              "id": "PMP01",
+              "maxFlow": 140,
+              "maxRpm": 3450,
+              "minFlow": 20,
+              "minRpm": 450,
+              "name": "Filter Pump",
+              "objectType": "PUMP",
+              "type": "VSF"
+            },
+            "speed": 30,
+            "speedType": "GPM"
+          }
+        ],
+        "id": "PMP01",
         "maxFlow": 140,
         "maxRpm": 3450,
         "minFlow": 20,
         "minRpm": 450,
         "name": "Filter Pump",
         "objectType": "PUMP",
-        "parentId": "PMP01",
-        "speed": 3400,
-        "speedType": "RPM",
         "type": "VSF"
       },
       {
-        "id": "p0201",
+        "circuits": [
+          {
+            "circuitId": "C0002",
+            "id": "p0201",
+            "pump": {
+              "id": "PMP02",
+              "maxFlow": 0,
+              "maxRpm": 3450,
+              "minFlow": 0,
+              "minRpm": 450,
+              "name": "Scupper Pump",
+              "objectType": "PUMP",
+              "type": "SPEED"
+            },
+            "speed": 2000,
+            "speedType": "RPM"
+          }
+        ],
+        "id": "PMP02",
         "maxFlow": 0,
         "maxRpm": 3450,
         "minFlow": 0,
         "minRpm": 450,
         "name": "Scupper Pump",
         "objectType": "PUMP",
-        "parentId": "PMP02",
-        "speed": 2000,
-        "speedType": "RPM",
         "type": "SPEED"
       }
     ]

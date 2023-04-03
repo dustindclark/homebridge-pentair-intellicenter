@@ -1,4 +1,4 @@
-import {CharacteristicValue, PlatformAccessory, Service} from 'homebridge';
+import {CharacteristicValue, Nullable, PlatformAccessory, Service} from 'homebridge';
 
 import {PentairPlatform} from './platform';
 import {
@@ -8,11 +8,11 @@ import {
   IntelliCenterRequest,
   IntelliCenterRequestCommand,
   Module,
-  Panel,
+  Panel, PumpCircuit, PumpSpeedType,
 } from './types';
 import {v4 as uuidv4} from 'uuid';
 import {MANUFACTURER} from './settings';
-import {ACT_KEY, DEFAULT_BRIGHTNESS, DEFAULT_COLOR_TEMPERATURE, STATUS_KEY} from './constants';
+import {ACT_KEY, DEFAULT_BRIGHTNESS, DEFAULT_COLOR_TEMPERATURE, SPEED_KEY, STATUS_KEY} from './constants';
 import {getIntelliBriteColor} from './util';
 
 const MODEL = 'Circuit';
@@ -27,6 +27,7 @@ export class CircuitAccessory {
   private circuit: Circuit;
   private panel: Panel;
   private module: Module | null;
+  private pumpCircuit: PumpCircuit | undefined;
 
   constructor(
     private readonly platform: PentairPlatform,
@@ -36,6 +37,7 @@ export class CircuitAccessory {
     this.module = accessory.context.module as Module;
     this.panel = accessory.context.panel as Panel;
     this.circuit = accessory.context.circuit as Circuit;
+    this.pumpCircuit = accessory.context.pump as PumpCircuit;
 
     const serial = this.module ? `${this.panel.id}.${this.module.id}.${this.circuit.id}` :
       `${this.panel.id}.${this.circuit.id}`;
@@ -72,9 +74,17 @@ export class CircuitAccessory {
 
     this.service.updateCharacteristic(this.platform.Characteristic.On, this.getCircuitStatus());
 
-    this.service.getCharacteristic(this.platform.Characteristic.On)
-      .onSet(this.setOn.bind(this))
-      .onGet(this.getOn.bind(this));
+
+    if (this.pumpCircuit) {
+      this.service.getCharacteristic(this.platform.Characteristic.RotationSpeed)
+        .onSet(this.setSpeed.bind(this))
+        .onGet(this.getSpeed.bind(this))
+        .updateValue(this.convertSpeedToPowerLevel());
+    } else {
+      this.service.getCharacteristic(this.platform.Characteristic.On)
+        .onSet(this.setOn.bind(this))
+        .onGet(this.getOn.bind(this));
+    }
   }
 
   /**
@@ -164,9 +174,70 @@ export class CircuitAccessory {
 
   getCircuitStatus(): boolean {
     if (this.accessory.context?.circuit?.status) {
-      this.platform.log.debug(`Circuit ${this.circuit.name} status is ${this.accessory.context.circuit.status }`);
+      this.platform.log.debug(`Circuit ${this.circuit.name} status is ${this.accessory.context.circuit.status}`);
       return this.accessory.context.circuit.status === CircuitStatus.On;
     }
     return false;
+  }
+
+  async setSpeed(value: CharacteristicValue) {
+    if (!this.pumpCircuit) {
+      this.platform.log.error('Tried to set speed when pump circuit is undefined.');
+      return;
+    }
+    if (value === 0) {
+      await this.setOn(0);
+      return;
+    } else if (!this.getCircuitStatus()) {
+      await this.setOn(1);
+    }
+    const convertedValue = this.convertPowerLevelToSpeed(value as number);
+
+    this.platform.log.info(`Setting speed for ${this.pumpCircuit.pump?.name} to ${value} converted/rounded to: ${convertedValue} ` +
+      `${this.pumpCircuit.speedType}`);
+    const command = {
+      command: IntelliCenterRequestCommand.SetParamList, //Weirdly required.
+      messageID: uuidv4(),
+      objectList: [{
+        objnam: this.pumpCircuit.id,
+        params: {[SPEED_KEY]: `${convertedValue}`} as never,
+      } as CircuitStatusMessage],
+    } as IntelliCenterRequest;
+    this.platform.sendCommandNoWait(command);
+
+  }
+
+  async getSpeed(): Promise<Nullable<CharacteristicValue>> {
+    return this.convertSpeedToPowerLevel();
+  }
+
+  convertSpeedToPowerLevel(): number {
+    if (!this.pumpCircuit?.speed) {
+      return 0;
+    }
+    const min = this.pumpCircuit.speedType === PumpSpeedType.GPM ? this.pumpCircuit.pump.minFlow : this.pumpCircuit.pump.minRpm;
+    const max = this.pumpCircuit.speedType === PumpSpeedType.GPM ? this.pumpCircuit.pump.maxFlow : this.pumpCircuit.pump.maxRpm;
+    const range = max - min;
+    const current = (this.pumpCircuit.speed ?? min) - min;
+    const value = current / range * 100;
+    const result = Math.round(value);
+    this.platform.log.debug(`Converted speed value from ${this.pumpCircuit.speed} ${this.pumpCircuit.speedType} to ${result}`);
+    return result;
+  }
+
+  convertPowerLevelToSpeed(powerLevel: number): number {
+    if (!this.pumpCircuit) {
+      this.platform.log.error('Cannot convert power level when pumpCircuit is null');
+      return 0;
+    }
+    const min = this.pumpCircuit.speedType === PumpSpeedType.GPM ? this.pumpCircuit.pump.minFlow : this.pumpCircuit.pump.minRpm;
+    const max = this.pumpCircuit.speedType === PumpSpeedType.GPM ? this.pumpCircuit.pump.maxFlow : this.pumpCircuit.pump.maxRpm;
+    const range: number = max - min;
+    const fromMin: number = powerLevel / 100 * range;
+    const value = min + fromMin;
+    const result = this.pumpCircuit.speedType === PumpSpeedType.GPM ? Math.round(value) :
+      Math.round(value / 50) * 50;
+    this.platform.log.debug(`Converted power level from ${powerLevel} to ${result} ${this.pumpCircuit.speedType}`);
+    return result;
   }
 }

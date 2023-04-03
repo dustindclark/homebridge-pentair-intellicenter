@@ -58,23 +58,33 @@ export enum BodyType {
   Spa = 'SPA',
 }
 
+export type BaseCircuit = {
+  id: string;
+};
+
 export type Circuit = {
   id: string;
   name: string;
   objectType: ObjectType;
   type: CircuitType | BodyType;
   status?: CircuitStatus;
-};
+} & BaseCircuit;
 
 export type Pump = {
-  parentId: string;
   minRpm: number;
   maxRpm: number;
   minFlow: number;
   maxFlow: number;
-  speed?: number;
-  speedType?: string;
+  circuits?: ReadonlyArray<PumpCircuit>;
 } & Circuit;
+
+export type PumpCircuit = {
+  id: string;
+  pump: Pump;
+  circuitId: string;
+  speed: number;
+  speedType: string;
+} & BaseCircuit;
 
 export enum CircuitStatus {
   On = 'ON',

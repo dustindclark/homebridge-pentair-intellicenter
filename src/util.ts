@@ -1,5 +1,6 @@
-import {Body, Circuit, Color, Heater, Module, ObjectType, Panel, Pump} from './types';
+import {Body, Circuit, Color, Heater, Module, ObjectType, Panel, Pump, PumpCircuit} from './types';
 import {
+  CIRCUIT_KEY,
   CIRCUITS_KEY,
   LAST_TEMP_KEY,
   OBJ_ID_KEY,
@@ -118,11 +119,8 @@ const transformPumps = (pumps: never[]): ReadonlyArray<Pump> => {
       && VARIABLE_SPEED_PUMP_SUBTYPES.has((pumpObj[PARAMS_KEY][OBJ_SUBTYPE_KEY] as string)?.toUpperCase());
   }).map(pumpObj => {
     const params = pumpObj[PARAMS_KEY];
-    const objList = params[OBJ_LIST_KEY];
-    const pumpSubObj = objList[0];
-    return {
-      id: pumpSubObj[OBJ_ID_KEY],
-      parentId: pumpObj[OBJ_ID_KEY],
+    const pump = {
+      id: pumpObj[OBJ_ID_KEY],
       name: params[OBJ_NAME_KEY],
       objectType: ObjectType.Pump,
       type: (params[OBJ_SUBTYPE_KEY] as string)?.toUpperCase(),
@@ -130,9 +128,28 @@ const transformPumps = (pumps: never[]): ReadonlyArray<Pump> => {
       maxRpm: +params[OBJ_MAX_KEY],
       minFlow: +params[OBJ_MIN_FLOW_KEY],
       maxFlow: +params[OBJ_MAX_FLOW_KEY],
-      speed: +pumpSubObj[PARAMS_KEY][SPEED_KEY],
-      speedType: (pumpSubObj[PARAMS_KEY][SELECT_KEY] as string)?.toUpperCase(),
     } as Pump;
+    const circuits = transformPumpCircuits(pump, params[OBJ_LIST_KEY]);
+
+    return {
+      ...pump,
+      circuits: circuits,
+    };
+  });
+};
+
+const transformPumpCircuits = (pump: Pump, pumpObjList: never[]): ReadonlyArray<PumpCircuit> => {
+  if (!pumpObjList) {
+    return [];
+  }
+  return pumpObjList.map(pumpObj => {
+    return {
+      id: pumpObj[OBJ_ID_KEY],
+      pump: pump,
+      circuitId: pumpObj[PARAMS_KEY][CIRCUIT_KEY],
+      speed: +pumpObj[PARAMS_KEY][SPEED_KEY],
+      speedType: (pumpObj[PARAMS_KEY][SELECT_KEY] as string)?.toUpperCase(),
+    } as PumpCircuit;
   });
 };
 

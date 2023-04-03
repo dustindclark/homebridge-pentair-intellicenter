@@ -4,6 +4,7 @@ import {PLATFORM_NAME, PLUGIN_NAME} from './settings';
 import {CircuitAccessory} from './circuitAccessory';
 import Telnet from 'telnet-client';
 import {
+  BaseCircuit,
   Body,
   Circuit,
   CircuitStatusMessage,
@@ -18,14 +19,13 @@ import {
   Module,
   ObjectType,
   Panel,
-  Pump,
+  PumpCircuit,
   TemperatureUnits,
 } from './types';
 import {v4 as uuidv4} from 'uuid';
 import {mergeResponse, transformPanels, updateBody, updateCircuit, updatePump} from './util';
 import {ACT_KEY, DISCOVER_COMMANDS, HEAT_SOURCE_KEY, HEATER_KEY, LAST_TEMP_KEY, MODE_KEY, STATUS_KEY} from './constants';
 import {HeaterAccessory} from './heaterAccessory';
-import {PumpAccessory} from './pumpAccessory';
 import EventEmitter from 'events';
 
 type PentairConfig = {
@@ -56,6 +56,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
   private readonly discoverCommandsSent: Array<string>;
   private discoveryBuffer: never | never[] | undefined;
   private buffer = '';
+  private readonly pumpIdToCircuitMap: Map<string, Circuit>;
 
   constructor(
     public readonly log: Logger,
@@ -70,6 +71,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     this.maxBufferSize = co.maxBufferSize || 1048576; // Default to 1MB
     this.discoverCommandsSent = [];
     this.discoveryBuffer = undefined;
+    this.pumpIdToCircuitMap = new Map<string, Circuit>();
 
     if (!co.ipAddress) {
       this.log.error('IP address is not configured. Cannot connect to Intellicenter');
@@ -210,20 +212,28 @@ export class PentairPlatform implements DynamicPlatformPlugin {
         changes.forEach((change) => {
           if (change.objnam && change.params) {
             this.log.debug(`Handling update for ${change.objnam}`);
-            const uuid = this.api.hap.uuid.generate(change.objnam);
-            const existingAccessory = this.accessoryMap.get(uuid);
-            if (existingAccessory) {
-              if (CircuitTypes.has(existingAccessory.context.circuit?.objectType)) {
-                this.log.debug(`Object is a circuit. Updating circuit: ${change.objnam}`);
-                this.updateCircuit(existingAccessory, change.params);
-              } else if (ObjectType.Pump === existingAccessory.context.pump?.objectType) {
-                this.log.debug(`Object is a pump. Updating pump: ${change.objnam}`);
-                this.updatePump(existingAccessory, change.params);
-              } else {
-                this.log.warn(`Unhandled object type on accessory: ${JSON.stringify(existingAccessory.context)}`);
-              }
+            const circuit = this.pumpIdToCircuitMap.get(change.objnam);
+            if (circuit) {
+              this.log.debug(`Update is for pump ID ${change.objnam}. Updating circuit ${circuit.id}`);
+              const uuid = this.api.hap.uuid.generate(circuit.id);
+              const existingAccessory = this.accessoryMap.get(uuid) as PlatformAccessory;
+              this.updatePump(existingAccessory, change.params);
             } else {
-              this.log.warn(`Existing accessory not found: ${change.objnam}. Skipping update.`);
+              const uuid = this.api.hap.uuid.generate(change.objnam);
+              const existingAccessory = this.accessoryMap.get(uuid);
+              if (existingAccessory) {
+                if (CircuitTypes.has(existingAccessory.context.circuit?.objectType)) {
+                  this.log.debug(`Object is a circuit. Updating circuit: ${change.objnam}`);
+                  this.updateCircuit(existingAccessory, change.params);
+                } else if (ObjectType.Pump === existingAccessory.context.pump?.objectType) {
+                  this.log.debug(`Object is a pump. Updating pump: ${change.objnam}`);
+
+                } else {
+                  this.log.warn(`Unhandled object type on accessory: ${JSON.stringify(existingAccessory.context)}`);
+                }
+              } else {
+                this.log.warn(`Existing accessory not found: ${change.objnam}. Skipping update.`);
+              }
             }
           }
         });
@@ -234,6 +244,14 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     }
   }
 
+  updatePump(accessory: PlatformAccessory, params: never) {
+    updateCircuit(accessory.context.pumpCircuit, params);
+    updatePump(accessory.context.pumpCircuit, params);
+    this.api.updatePlatformAccessories([accessory]);
+    new CircuitAccessory(this, accessory);
+  }
+
+
   updateCircuit(accessory: PlatformAccessory, params: never) {
     updateCircuit(accessory.context.circuit, params);
     if (accessory.context.circuit.objectType === ObjectType.Body) {
@@ -243,13 +261,6 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     }
     this.api.updatePlatformAccessories([accessory]);
     new CircuitAccessory(this, accessory);
-  }
-
-  updatePump(accessory: PlatformAccessory, params: never) {
-    updateCircuit(accessory.context.pump, params);
-    updatePump(accessory.context.pump, params);
-    this.api.updatePlatformAccessories([accessory]);
-    new PumpAccessory(this, accessory);
   }
 
   updateHeaterStatuses(body: Body) {
@@ -308,29 +319,33 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     const panels = transformPanels(this.discoveryBuffer);
     this.log.debug(`Transformed panels from IntelliCenter: ${this.json(panels)}`);
 
+    this.pumpIdToCircuitMap.clear();
+    const circuitIdPumpMap = new Map<string, PumpCircuit>();
     const bodyIdMap = new Map<string, Body>();
     let heaters = [] as ReadonlyArray<Heater>;
     for (const panel of panels) {
+      for (const pump of panel.pumps) {
+        //this.discoverPump(panel, pump);
+        for (const pumpCircuit of pump.circuits as ReadonlyArray<PumpCircuit>) {
+          circuitIdPumpMap.set(pumpCircuit.circuitId, pumpCircuit);
+          this.subscribeForUpdates(pumpCircuit, [STATUS_KEY, ACT_KEY]);
+        }
+      }
       for (const module of panel.modules) {
         for (const body of module.bodies) {
-          this.discoverCircuit(panel, module, body);
+          this.discoverCircuit(panel, module, body, circuitIdPumpMap.get(body.id));
           this.subscribeForUpdates(body, [STATUS_KEY, LAST_TEMP_KEY, HEAT_SOURCE_KEY, HEATER_KEY, MODE_KEY]);
           bodyIdMap.set(body.id, body);
         }
         for (const feature of module.features) {
-          this.discoverCircuit(panel, module, feature);
+          this.discoverCircuit(panel, module, feature, circuitIdPumpMap.get(feature.id));
           this.subscribeForUpdates(feature, [STATUS_KEY, ACT_KEY]);
         }
         heaters = heaters.concat(module.heaters);
       }
       for (const feature of panel.features) {
-        this.discoverCircuit(panel, null, feature);
+        this.discoverCircuit(panel, null, feature, circuitIdPumpMap.get(feature.id));
         this.subscribeForUpdates(feature, [STATUS_KEY, ACT_KEY]);
-      }
-
-      for (const pump of panel.pumps) {
-        this.discoverPump(panel, pump);
-        this.subscribeForUpdates(pump, [STATUS_KEY, ACT_KEY]);
       }
     }
     for (const heater of heaters) {
@@ -369,7 +384,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     });
   }
 
-  discoverCircuit(panel: Panel, module: Module | null, circuit: Circuit) {
+  discoverCircuit(panel: Panel, module: Module | null, circuit: Circuit, pump: PumpCircuit | undefined) {
     const uuid = this.api.hap.uuid.generate(circuit.id);
 
     const existingAccessory = this.accessoryMap.get(uuid);
@@ -379,6 +394,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
       existingAccessory.context.circuit = circuit;
       existingAccessory.context.module = module;
       existingAccessory.context.panel = panel;
+      existingAccessory.context.pump = pump;
       this.api.updatePlatformAccessories([existingAccessory]);
       new CircuitAccessory(this, existingAccessory);
     } else {
@@ -387,35 +403,17 @@ export class PentairPlatform implements DynamicPlatformPlugin {
       accessory.context.circuit = circuit;
       accessory.context.module = module;
       accessory.context.panel = panel;
+      accessory.context.pump = pump;
       new CircuitAccessory(this, accessory);
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
       this.accessoryMap.set(accessory.UUID, accessory);
     }
-  }
-
-  discoverPump(panel: Panel, pump: Pump) {
-    const uuid = this.api.hap.uuid.generate(pump.id);
-
-    const existingAccessory = this.accessoryMap.get(uuid);
-
-    if (existingAccessory) {
-      this.log.debug(`Restoring existing pump with ID ${pump.id} from cache: ${existingAccessory.displayName}`);
-      existingAccessory.context.pump = pump;
-      existingAccessory.context.panel = panel;
-      this.api.updatePlatformAccessories([existingAccessory]);
-      new PumpAccessory(this, existingAccessory);
-    } else {
-      this.log.debug(`Adding new pump ${pump.id}: ${pump.name}`);
-      const accessory = new this.api.platformAccessory(pump.name, uuid);
-      accessory.context.pump = pump;
-      accessory.context.panel = panel;
-      new PumpAccessory(this, accessory);
-      this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
-      this.accessoryMap.set(accessory.UUID, accessory);
+    if (pump) {
+      this.pumpIdToCircuitMap.set(pump.id, circuit);
     }
   }
 
-  subscribeForUpdates(circuit: Circuit, keys: ReadonlyArray<string>) {
+  subscribeForUpdates(circuit: BaseCircuit, keys: ReadonlyArray<string>) {
     const command = {
       command: IntelliCenterRequestCommand.RequestParamList,
       messageID: uuidv4(),

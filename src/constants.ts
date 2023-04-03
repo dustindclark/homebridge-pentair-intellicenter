@@ -9,6 +9,7 @@ export const OBJ_MAX_KEY = 'MAX';
 export const OBJ_MIN_FLOW_KEY = 'MINF';
 export const OBJ_MAX_FLOW_KEY = 'MAXF';
 export const CIRCUITS_KEY = 'CIRCUITS';
+export const CIRCUIT_KEY = 'CIRCUIT';
 export const STATUS_KEY = 'STATUS';
 export const ACT_KEY = 'ACT';
 export const LAST_TEMP_KEY = 'LSTTMP';
