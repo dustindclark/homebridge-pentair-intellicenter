@@ -1,13 +1,18 @@
-import {Body, Circuit, Color, Heater, Module, ObjectType, Panel} from './types';
+import {Body, Circuit, Color, Heater, Module, ObjectType, Panel, Pump} from './types';
 import {
   CIRCUITS_KEY,
   LAST_TEMP_KEY,
   OBJ_ID_KEY,
   OBJ_LIST_KEY,
+  OBJ_MAX_KEY,
+  OBJ_MIN_KEY,
   OBJ_NAME_KEY,
   OBJ_SUBTYPE_KEY,
   OBJ_TYPE_KEY,
   PARAMS_KEY,
+  SELECT_KEY,
+  SPEED_KEY,
+  VARIABLE_SPEED_PUMP_SUBTYPES,
 } from './constants';
 
 const transformHeaters = (heaters: never[]): ReadonlyArray<Heater> => {
@@ -39,6 +44,11 @@ const bodyParams = new Map([
   ['heatMode', 'MODE'],
 ]) as ReadonlyMap<string, string>;
 
+const pumpParams = new Map([
+  ['speedType', SELECT_KEY],
+  ['speed', SPEED_KEY],
+]) as ReadonlyMap<string, string>;
+
 export const updateCircuit = (circuit: Body, params: never): void => {
   circuitParams.forEach((value, key) => {
     if (params[value]) {
@@ -54,6 +64,15 @@ export const updateBody = (body: Body, params: never): void => {
     }
   });
 };
+
+export const updatePump = (pump: Pump, params: never): void => {
+  pumpParams.forEach((value, key) => {
+    if (params[value]) {
+      pump[key] = params[value];
+    }
+  });
+};
+
 
 const transformBodies = (circuits: never[]): ReadonlyArray<Body> => {
   if (!circuits) {
@@ -90,6 +109,31 @@ const transformFeatures = (circuits: never[]): ReadonlyArray<Circuit> => {
   });
 };
 
+const transformPumps = (pumps: never[]): ReadonlyArray<Pump> => {
+  if (!pumps) {
+    return [];
+  }
+  return pumps.filter(pumpObj => {
+    return pumpObj[PARAMS_KEY][OBJ_TYPE_KEY] === ObjectType.Pump
+      && VARIABLE_SPEED_PUMP_SUBTYPES.has((pumpObj[PARAMS_KEY][OBJ_SUBTYPE_KEY] as string)?.toUpperCase());
+  }).map(pumpObj => {
+    const params = pumpObj[PARAMS_KEY];
+    const objList = params[OBJ_LIST_KEY];
+    const pumpSubObj = objList[0];
+    return {
+      id: pumpSubObj[OBJ_ID_KEY],
+      parentId: pumpObj[OBJ_ID_KEY],
+      name: params[OBJ_NAME_KEY],
+      objectType: ObjectType.Pump,
+      type: (params[OBJ_SUBTYPE_KEY] as string)?.toUpperCase(),
+      min: +params[OBJ_MIN_KEY],
+      max: +params[OBJ_MAX_KEY],
+      speed: +pumpSubObj[PARAMS_KEY][SPEED_KEY],
+      speedType: (pumpSubObj[PARAMS_KEY][SELECT_KEY] as string)?.toUpperCase(),
+    } as Pump;
+  });
+};
+
 const transformModules = (modules: never[]): ReadonlyArray<Module> => {
   if (!modules) {
     return [];
@@ -114,6 +158,7 @@ export const transformPanels = (response: never | never[]): ReadonlyArray<Panel>
       id: panelObj[OBJ_ID_KEY],
       modules: transformModules(objList),
       features: transformFeatures(objList), // Some features are directly on panel.
+      pumps: transformPumps(objList),
     } as Panel;
   });
 };

@@ -66,9 +66,22 @@ export type Circuit = {
   status?: CircuitStatus;
 };
 
+export type Pump = {
+  parentId: string;
+  min: number;
+  max: number;
+  speed?: number;
+  speedType?: string;
+} & Circuit;
+
 export enum CircuitStatus {
   On = 'ON',
   Off = 'OFF',
+}
+
+export enum PumpSpeedType {
+  RPM= 'RPM',
+  GPM = 'GPM',
 }
 
 export enum HeatMode {
@@ -99,6 +112,7 @@ export type Panel = {
   id: string;
   modules: ReadonlyArray<Module>;
   features: ReadonlyArray<Circuit>;
+  pumps: ReadonlyArray<Pump>;
 };
 
 export enum ObjectType {

@@ -18,12 +18,15 @@ import {
   Module,
   ObjectType,
   Panel,
+  Pump,
   TemperatureUnits,
 } from './types';
 import {v4 as uuidv4} from 'uuid';
-import {mergeResponse, transformPanels, updateBody, updateCircuit} from './util';
+import {mergeResponse, transformPanels, updateBody, updateCircuit, updatePump} from './util';
 import {ACT_KEY, DISCOVER_COMMANDS, HEAT_SOURCE_KEY, HEATER_KEY, LAST_TEMP_KEY, MODE_KEY, STATUS_KEY} from './constants';
 import {HeaterAccessory} from './heaterAccessory';
+import {PumpAccessory} from './pumpAccessory';
+import EventEmitter from 'events';
 
 type PentairConfig = {
   ipAddress: string;
@@ -106,6 +109,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
   }
 
   setupSocketEventHandlers() {
+    EventEmitter.defaultMaxListeners = 50;
     this.connection.on('data', async (chunk) => {
       if (chunk.length > 0 && chunk[chunk.length - 1] === 10) {
         const bufferedData = this.buffer + chunk;
@@ -209,10 +213,17 @@ export class PentairPlatform implements DynamicPlatformPlugin {
             const uuid = this.api.hap.uuid.generate(change.objnam);
             const existingAccessory = this.accessoryMap.get(uuid);
             if (existingAccessory) {
-              if (CircuitTypes.has(existingAccessory.context.circuit.objectType)) {
+              if (CircuitTypes.has(existingAccessory.context.circuit?.objectType)) {
                 this.log.debug(`Object is a circuit. Updating circuit: ${change.objnam}`);
                 this.updateCircuit(existingAccessory, change.params);
+              } else if (ObjectType.Pump === existingAccessory.context.pump?.objectType) {
+                this.log.debug(`Object is a pump. Updating pump: ${change.objnam}`);
+                this.updatePump(existingAccessory, change.params);
+              } else {
+                this.log.warn(`Unhandled object type on accessory: ${JSON.stringify(existingAccessory.context)}`);
               }
+            } else {
+              this.log.warn(`Existing accessory not found: ${change.objnam}. Skipping update.`);
             }
           }
         });
@@ -234,9 +245,16 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     new CircuitAccessory(this, accessory);
   }
 
+  updatePump(accessory: PlatformAccessory, params: never) {
+    updateCircuit(accessory.context.pump, params);
+    updatePump(accessory.context.pump, params);
+    this.api.updatePlatformAccessories([accessory]);
+    new PumpAccessory(this, accessory);
+  }
+
   updateHeaterStatuses(body: Body) {
     this.heaters.forEach(((heaterAccessory) => {
-      if (heaterAccessory.context.body?.id === body.id) {
+      if (heaterAccessory.context?.body?.id === body.id) {
         this.log.debug(`Updating heater ${heaterAccessory.displayName}`);
         heaterAccessory.context.body = body;
         this.api.updatePlatformAccessories([heaterAccessory]);
@@ -309,6 +327,11 @@ export class PentairPlatform implements DynamicPlatformPlugin {
         this.discoverCircuit(panel, null, feature);
         this.subscribeForUpdates(feature, [STATUS_KEY, ACT_KEY]);
       }
+
+      for (const pump of panel.pumps) {
+        this.discoverPump(panel, pump);
+        this.subscribeForUpdates(pump, [STATUS_KEY, ACT_KEY]);
+      }
     }
     for (const heater of heaters) {
       this.discoverHeater(heater, bodyIdMap);
@@ -364,6 +387,26 @@ export class PentairPlatform implements DynamicPlatformPlugin {
       accessory.context.module = module;
       accessory.context.panel = panel;
       new CircuitAccessory(this, accessory);
+      this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+    }
+  }
+
+  discoverPump(panel: Panel, pump: Pump) {
+    const uuid = this.api.hap.uuid.generate(pump.id);
+
+    const existingAccessory = this.accessoryMap.get(uuid);
+
+    if (existingAccessory) {
+      this.log.debug(`Restoring existing pump with ID ${pump.id} from cache: ${existingAccessory.displayName}`);
+      existingAccessory.context.pump = pump;
+      this.api.updatePlatformAccessories([existingAccessory]);
+      new PumpAccessory(this, existingAccessory);
+    } else {
+      this.log.debug(`Adding new pump ${pump.id}: ${pump.name}`);
+      const accessory = new this.api.platformAccessory(pump.name, uuid);
+      accessory.context.pump = pump;
+      accessory.context.panel = panel;
+      new PumpAccessory(this, accessory);
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
     }
   }

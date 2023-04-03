@@ -1,106 +1,140 @@
 [
   {
-    "features":[
-
+    "features": [
+      {
+        "id": "FTR01",
+        "name": "Spa Return",
+        "objectType": "CIRCUIT",
+        "type": "GENERIC"
+      }
     ],
-    "id":"PNL01",
-    "modules":[
+    "id": "PNL01",
+    "modules": [
       {
-        "bodies":[
+        "bodies": [
           {
-            "heatMode":"1",
-            "heaterId":"00000",
-            "highTemperature":"100",
-            "id":"B1101",
-            "lowTemperature":"86",
-            "name":"Pool",
-            "objectType":"BODY",
-            "type":"POOL"
+            "heatMode": "2",
+            "heaterId": "H0001",
+            "highTemperature": "100",
+            "id": "B1101",
+            "lowTemperature": "85",
+            "name": "Pool",
+            "objectType": "BODY",
+            "type": "POOL"
           }
         ],
-        "features":[
+        "features": [
           {
-            "id":"C0002",
-            "name":"Scuppers",
-            "objectType":"CIRCUIT",
-            "type":"GENERIC"
+            "id": "C0002",
+            "name": "Scuppers",
+            "objectType": "CIRCUIT",
+            "type": "GENERIC"
           },
           {
-            "id":"C0003",
-            "name":"Air Blower",
-            "objectType":"CIRCUIT",
-            "type":"GENERIC"
+            "id": "C0003",
+            "name": "Air Blower",
+            "objectType": "CIRCUIT",
+            "type": "GENERIC"
           },
           {
-            "id":"C0004",
-            "name":"Spa Light",
-            "objectType":"CIRCUIT",
-            "type":"INTELLI"
+            "id": "C0004",
+            "name": "Spa Light",
+            "objectType": "CIRCUIT",
+            "type": "INTELLI"
           },
           {
-            "id":"C0005",
-            "name":"Pool Light",
-            "objectType":"CIRCUIT",
-            "type":"INTELLI"
+            "id": "C0005",
+            "name": "Pool Light",
+            "objectType": "CIRCUIT",
+            "type": "INTELLI"
           }
         ],
-        "heaters":[
-
+        "heaters": [
+          {
+            "bodyIds": [
+              "B1101",
+              "B1202"
+            ],
+            "id": "H0001",
+            "name": "Gas Heater",
+            "objectType": "HEATER",
+            "type": "GENERIC"
+          }
         ],
-        "id":"M0101",
-        "type":"I5P"
+        "id": "M0101",
+        "type": "I5P"
       },
       {
-        "bodies":[
+        "bodies": [
           {
-            "heatMode":"1",
-            "heaterId":"00000",
-            "highTemperature":"103",
-            "id":"B1202",
-            "lowTemperature":"103",
-            "name":"Spa",
-            "objectType":"BODY",
-            "type":"SPA"
+            "heatMode": "2",
+            "heaterId": "H0001",
+            "highTemperature": "103",
+            "id": "B1202",
+            "lowTemperature": "98",
+            "name": "Spa",
+            "objectType": "BODY",
+            "type": "SPA"
           }
         ],
-        "features":[
+        "features": [
           {
-            "id":"C0007",
-            "name":"Cleaner",
-            "objectType":"CIRCUIT",
-            "type":"GENERIC"
+            "id": "C0007",
+            "name": "Cleaner",
+            "objectType": "CIRCUIT",
+            "type": "GENERIC"
           },
           {
-            "id":"C0008",
-            "name":"Pool High Speed",
-            "objectType":"CIRCUIT",
-            "type":"GENERIC"
+            "id": "C0008",
+            "name": "Pool High Speed",
+            "objectType": "CIRCUIT",
+            "type": "GENERIC"
           },
           {
-            "id":"C0009",
-            "name":"Pool Low Speed",
-            "objectType":"CIRCUIT",
-            "type":"GENERIC"
+            "id": "C0009",
+            "name": "Pool Low Speed",
+            "objectType": "CIRCUIT",
+            "type": "GENERIC"
           }
         ],
-        "heaters":[
-
+        "heaters": [
         ],
-        "id":"M0102",
-        "type":"I8PS"
+        "id": "M0102",
+        "type": "I8PS"
       },
       {
-        "bodies":[
-
+        "bodies": [
         ],
-        "features":[
-
+        "features": [
         ],
-        "heaters":[
-
+        "heaters": [
         ],
-        "id":"M0103",
-        "type":"ANLGEXP"
+        "id": "M0103",
+        "type": "ANLGEXP"
+      }
+    ],
+    "pumps": [
+      {
+        "id": "p0101",
+        "max": 3450,
+        "min": 450,
+        "name": "Filter Pump",
+        "objectType": "PUMP",
+        "parentId": "PMP01",
+        "speed": 3400,
+        "speedType": "RPM",
+        "type": "VSF"
+      },
+      {
+        "id": "p0201",
+        "max": 3450,
+        "min": 450,
+        "name": "Scupper Pump",
+        "objectType": "PUMP",
+        "parentId": "PMP02",
+        "speed": 2000,
+        "speedType": "RPM",
+        "type": "SPEED"
       }
     ]
   }
