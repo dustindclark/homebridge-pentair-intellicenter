@@ -360,6 +360,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
           accessory.context.heater = heater;
           new HeaterAccessory(this, accessory);
           this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+          this.accessoryMap.set(accessory.UUID, accessory);
         }
         this.heaters.set(uuid, accessory);
       } else {
@@ -388,6 +389,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
       accessory.context.panel = panel;
       new CircuitAccessory(this, accessory);
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+      this.accessoryMap.set(accessory.UUID, accessory);
     }
   }
 
@@ -409,6 +411,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
       accessory.context.panel = panel;
       new PumpAccessory(this, accessory);
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+      this.accessoryMap.set(accessory.UUID, accessory);
     }
   }
 
