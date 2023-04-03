@@ -24,7 +24,17 @@ import {
 } from './types';
 import {v4 as uuidv4} from 'uuid';
 import {mergeResponse, transformPanels, updateBody, updateCircuit, updatePump} from './util';
-import {ACT_KEY, DISCOVER_COMMANDS, HEAT_SOURCE_KEY, HEATER_KEY, LAST_TEMP_KEY, MODE_KEY, STATUS_KEY} from './constants';
+import {
+  ACT_KEY,
+  DISCOVER_COMMANDS,
+  HEAT_SOURCE_KEY,
+  HEATER_KEY,
+  LAST_TEMP_KEY,
+  MODE_KEY,
+  SELECT_KEY,
+  SPEED_KEY,
+  STATUS_KEY,
+} from './constants';
 import {HeaterAccessory} from './heaterAccessory';
 import EventEmitter from 'events';
 
@@ -324,7 +334,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
       for (const pump of panel.pumps) {
         for (const pumpCircuit of pump.circuits as ReadonlyArray<PumpCircuit>) {
           circuitIdPumpMap.set(pumpCircuit.circuitId, pumpCircuit);
-          this.subscribeForUpdates(pumpCircuit, [STATUS_KEY, ACT_KEY]);
+          this.subscribeForUpdates(pumpCircuit, [STATUS_KEY, ACT_KEY, SPEED_KEY, SELECT_KEY]);
         }
       }
       for (const module of panel.modules) {
