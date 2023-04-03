@@ -399,6 +399,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     if (existingAccessory) {
       this.log.debug(`Restoring existing pump with ID ${pump.id} from cache: ${existingAccessory.displayName}`);
       existingAccessory.context.pump = pump;
+      existingAccessory.context.panel = panel;
       this.api.updatePlatformAccessories([existingAccessory]);
       new PumpAccessory(this, existingAccessory);
     } else {

@@ -68,8 +68,10 @@ export type Circuit = {
 
 export type Pump = {
   parentId: string;
-  min: number;
-  max: number;
+  minRpm: number;
+  maxRpm: number;
+  minFlow: number;
+  maxFlow: number;
   speed?: number;
   speedType?: string;
 } & Circuit;

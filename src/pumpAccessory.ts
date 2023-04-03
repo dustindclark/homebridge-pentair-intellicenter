@@ -83,8 +83,10 @@ export class PumpAccessory {
     if (!this.pump?.speed) {
       return 0;
     }
-    const range = this.pump.max - this.pump.min;
-    const current = (this.pump.speed ?? this.pump.min) - this.pump.min;
+    const min = this.pump.speedType === PumpSpeedType.GPM ? this.pump.minFlow : this.pump.minRpm;
+    const max = this.pump.speedType === PumpSpeedType.GPM ? this.pump.maxFlow : this.pump.maxRpm;
+    const range = max - min;
+    const current = (this.pump.speed ?? min) - min;
     const value = current / range * 100;
     const result = Math.round(value);
     this.platform.log.info(`Converted speed value from ${this.pump.speed} ${this.pump.speedType} to ${result}`);
@@ -92,9 +94,11 @@ export class PumpAccessory {
   }
 
   convertPowerLevelToSpeed(powerLevel: number): number {
-    const range: number = this.pump.max - this.pump.min;
+    const min = this.pump.speedType === PumpSpeedType.GPM ? this.pump.minFlow : this.pump.minRpm;
+    const max = this.pump.speedType === PumpSpeedType.GPM ? this.pump.maxFlow : this.pump.maxRpm;
+    const range: number = max - min;
     const fromMin: number = powerLevel / 100 * range;
-    const value = this.pump.min + fromMin;
+    const value = min + fromMin;
     const result = this.pump.speedType === PumpSpeedType.GPM ? Math.round(value) :
       Math.round(value / 50) * 50;
     this.platform.log.info(`Converted power level from ${powerLevel} to ${result} ${this.pump.speedType}`);

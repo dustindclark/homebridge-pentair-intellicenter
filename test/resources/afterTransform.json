@@ -116,8 +116,10 @@
     "pumps": [
       {
         "id": "p0101",
-        "max": 3450,
-        "min": 450,
+        "maxFlow": 140,
+        "maxRpm": 3450,
+        "minFlow": 20,
+        "minRpm": 450,
         "name": "Filter Pump",
         "objectType": "PUMP",
         "parentId": "PMP01",
@@ -127,8 +129,10 @@
       },
       {
         "id": "p0201",
-        "max": 3450,
-        "min": 450,
+        "maxFlow": 0,
+        "maxRpm": 3450,
+        "minFlow": 0,
+        "minRpm": 450,
         "name": "Scupper Pump",
         "objectType": "PUMP",
         "parentId": "PMP02",
