@@ -65,6 +65,9 @@ export class CircuitAccessory {
       this.service.getCharacteristic(this.platform.Characteristic.Brightness)
         .onSet(this.setBrightness.bind(this))
         .onGet(this.getBrightness.bind(this));
+    } else if (this.pumpCircuit) {
+      this.service = this.accessory.getService(this.platform.Service.Fan)
+        || this.accessory.addService(this.platform.Service.Fan);
     } else {
       this.service = this.accessory.getService(this.platform.Service.Switch)
         || this.accessory.addService(this.platform.Service.Switch);
