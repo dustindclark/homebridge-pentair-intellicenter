@@ -225,9 +225,6 @@ export class PentairPlatform implements DynamicPlatformPlugin {
                 if (CircuitTypes.has(existingAccessory.context.circuit?.objectType)) {
                   this.log.debug(`Object is a circuit. Updating circuit: ${change.objnam}`);
                   this.updateCircuit(existingAccessory, change.params);
-                } else if (ObjectType.Pump === existingAccessory.context.pump?.objectType) {
-                  this.log.debug(`Object is a pump. Updating pump: ${change.objnam}`);
-
                 } else {
                   this.log.warn(`Unhandled object type on accessory: ${JSON.stringify(existingAccessory.context)}`);
                 }
@@ -384,7 +381,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     });
   }
 
-  discoverCircuit(panel: Panel, module: Module | null, circuit: Circuit, pump: PumpCircuit | undefined) {
+  discoverCircuit(panel: Panel, module: Module | null, circuit: Circuit, pumpCircuit: PumpCircuit | undefined) {
     const uuid = this.api.hap.uuid.generate(circuit.id);
 
     const existingAccessory = this.accessoryMap.get(uuid);
@@ -394,7 +391,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
       existingAccessory.context.circuit = circuit;
       existingAccessory.context.module = module;
       existingAccessory.context.panel = panel;
-      existingAccessory.context.pump = pump;
+      existingAccessory.context.pumpCircuit = pumpCircuit;
       this.api.updatePlatformAccessories([existingAccessory]);
       new CircuitAccessory(this, existingAccessory);
     } else {
@@ -403,13 +400,13 @@ export class PentairPlatform implements DynamicPlatformPlugin {
       accessory.context.circuit = circuit;
       accessory.context.module = module;
       accessory.context.panel = panel;
-      accessory.context.pump = pump;
+      accessory.context.pumpCircuit = pumpCircuit;
       new CircuitAccessory(this, accessory);
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
       this.accessoryMap.set(accessory.UUID, accessory);
     }
-    if (pump) {
-      this.pumpIdToCircuitMap.set(pump.id, circuit);
+    if (pumpCircuit) {
+      this.pumpIdToCircuitMap.set(pumpCircuit.id, circuit);
     }
   }
 
