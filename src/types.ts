@@ -107,6 +107,7 @@ export type Body = {
   lowTemperature?: number;
   heaterId?: string;
   heatMode?: HeatMode;
+  circuit?: BaseCircuit;
 } & Circuit;
 
 export type Heater = {

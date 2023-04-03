@@ -1,4 +1,4 @@
-import {Body, Circuit, Color, Heater, Module, ObjectType, Panel, Pump, PumpCircuit} from './types';
+import {BaseCircuit, Body, Circuit, Color, Heater, Module, ObjectType, Panel, Pump, PumpCircuit} from './types';
 import {
   CIRCUIT_KEY,
   CIRCUITS_KEY,
@@ -79,7 +79,7 @@ const transformBodies = (circuits: never[]): ReadonlyArray<Body> => {
   if (!circuits) {
     return [];
   }
-  return circuits.filter(featureObj => featureObj[PARAMS_KEY][OBJ_TYPE_KEY] === ObjectType.Body).map(bodyObj => {
+  return circuits.filter(circuitObj => circuitObj[PARAMS_KEY][OBJ_TYPE_KEY] === ObjectType.Body).map(bodyObj => {
     const params = bodyObj[PARAMS_KEY];
     const body = {
       id: bodyObj[OBJ_ID_KEY],
@@ -88,8 +88,24 @@ const transformBodies = (circuits: never[]): ReadonlyArray<Body> => {
       type: (params[OBJ_SUBTYPE_KEY] as string)?.toUpperCase(),
     } as Body;
     updateBody(body, params);
-    return body;
+    return {
+      ...body,
+      circuit: findBodyCircuit(body, circuits),
+    };
   });
+};
+
+export const findBodyCircuit = (body: Body, circuits: never[]): BaseCircuit | undefined => {
+  for (const circuit of circuits) {
+    const params = circuit[PARAMS_KEY];
+    if (params[OBJ_TYPE_KEY] === ObjectType.Circuit && body.type === params[OBJ_SUBTYPE_KEY]
+      && body.name === params[OBJ_NAME_KEY]) {
+      return {
+        id: circuit[OBJ_ID_KEY],
+      };
+    }
+  }
+  return undefined;
 };
 
 const transformFeatures = (circuits: never[]): ReadonlyArray<Circuit> => {

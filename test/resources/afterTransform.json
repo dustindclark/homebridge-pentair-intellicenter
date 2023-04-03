@@ -13,6 +13,9 @@
       {
         "bodies": [
           {
+            "circuit": {
+              "id": "C0006"
+            },
             "heatMode": "2",
             "heaterId": "H0001",
             "highTemperature": "100",
@@ -67,6 +70,9 @@
       {
         "bodies": [
           {
+            "circuit": {
+              "id": "C0001"
+            },
             "heatMode": "2",
             "heaterId": "H0001",
             "highTemperature": "103",

@@ -322,7 +322,6 @@ export class PentairPlatform implements DynamicPlatformPlugin {
     let heaters = [] as ReadonlyArray<Heater>;
     for (const panel of panels) {
       for (const pump of panel.pumps) {
-        //this.discoverPump(panel, pump);
         for (const pumpCircuit of pump.circuits as ReadonlyArray<PumpCircuit>) {
           circuitIdPumpMap.set(pumpCircuit.circuitId, pumpCircuit);
           this.subscribeForUpdates(pumpCircuit, [STATUS_KEY, ACT_KEY]);
@@ -330,7 +329,7 @@ export class PentairPlatform implements DynamicPlatformPlugin {
       }
       for (const module of panel.modules) {
         for (const body of module.bodies) {
-          this.discoverCircuit(panel, module, body, circuitIdPumpMap.get(body.id));
+          this.discoverCircuit(panel, module, body, circuitIdPumpMap.get(body.circuit?.id as string));
           this.subscribeForUpdates(body, [STATUS_KEY, LAST_TEMP_KEY, HEAT_SOURCE_KEY, HEATER_KEY, MODE_KEY]);
           bodyIdMap.set(body.id, body);
         }
